@@ -34,5 +34,58 @@ public static class DataImporterMenu
             );
     }
 
+    [MenuItem("Tools/Excel Import/AI")]
+    public static void ImportAI()
+    {
+        DataImporter.Import<AIData>(
+            "Assets/Editor/ExcelData/AIData.xlsx",
+            "Assets/GameData/AIs"
+            );
+    }
+
+    [MenuItem("Tools/Excel Import/AIBehavior")]
+    public static void ImportAIBehaviorData()
+    {
+        DataImporter.Import<AIBehaviorData>(
+            "Assets/Editor/ExcelData/AIBehaviorData.xlsx",
+            "Assets/GameData/AIBehaviors"
+            );
+    }
+
+    [MenuItem("Tools/Excel Import/MatchDrop")]
+    public static void ImportMatchDrop()
+    {
+        DataImporter.Import<MatchDropData>(
+            "Assets/Editor/ExcelData/MatchDropData.xlsx",
+            "Assets/GameData/MatchDrops"
+            );
+    }
+
+    [MenuItem("Tools/Excel Import/MatchProgression")]
+    public static void ImportMatchProgression()
+    {
+        DataImporter.Import<MatchProgressionData>(
+            "Assets/Editor/ExcelData/MatchProgressionData.xlsx",
+            "Assets/GameData/MatchProgressions"
+            );
+    }
+
+    [MenuItem("Tools/Excel Import/Match")]
+    public static void ImportMatch()
+    {
+        DataImporter.Import<MatchData>(
+            "Assets/Editor/ExcelData/MatchData.xlsx",
+            "Assets/GameData/Matches"
+            );
+    }
+
+    [MenuItem("Tools/Excel Import/Player")]
+    public static void ImportPlayer()
+    {
+        DataImporter.Import<PlayerData>(
+            "Assets/Editor/ExcelData/PlayerData.xlsx",
+            "Assets/GameData/Players"
+            );
+    }
 
 }

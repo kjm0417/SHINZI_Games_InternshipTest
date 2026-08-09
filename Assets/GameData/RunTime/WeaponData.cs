@@ -7,7 +7,7 @@ public class WeaponData : ScriptableObject
     [SerializeField] private WeaponType weaponType;
     [SerializeField] private string weaponName;
     [SerializeField] private float damage;
-    [SerializeField] private float attackCooldawn;
+    [SerializeField] private float attackCooldown;
     [SerializeField] private float range;
 
     [Tooltip("ÁÖ¼Ò°ª")]
@@ -19,7 +19,7 @@ public class WeaponData : ScriptableObject
     public WeaponType WeaponType => weaponType;
     public string WeaponName => weaponName;
     public float Damage => damage;
-    public float AttackCooldawn => attackCooldawn;
+    public float AttackCooldawn => attackCooldown;
     public float Range => range;
     public string PrefabAddressable => prefabAddressable;
     public string IconAddressable => iconAddressable;

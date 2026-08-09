@@ -82,7 +82,7 @@ public static class DataImporter
         //마지막에 한 번만 저장 (성능: 디스크 쓰기 1회)
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();    
-        Debug.Log("무기 데이터 변환 완료");
+        Debug.Log($"{typeof(T)} 데이터 변환 완료");
     }
 
     private static object ConvertValue(string raw, Type type, string header, int row)
