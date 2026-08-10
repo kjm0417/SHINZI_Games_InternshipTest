@@ -16,7 +16,7 @@ MonoBehaviour:
   weaponType: 1
   weaponName: "\uCD1D"
   damage: 15
-  attackCooldawn: 3
+  attackCooldown: 0
   range: 10
   prefabAddressable: 
   iconAddressable: 

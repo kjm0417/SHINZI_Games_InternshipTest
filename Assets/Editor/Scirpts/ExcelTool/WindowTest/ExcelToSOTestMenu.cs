@@ -1,100 +1,67 @@
 using UnityEditor;
-
-public class WeaponReadTest
-{
-    [MenuItem("Tools/Excel Test/Read Weapon Sheet")]
-    public static void RunTest()
-    {
-        // 네 엑셀 파일의 실제 경로로 바꿔야 함
-        string path = "Assets/Editor/ExcelSource/WeaponData.xlsx";
-        ExcelReader.Read(path);
-    }
-}
-
-//public static class WeaponImporterMenu
-//{
-//    [MenuItem("Tools/Excel Import/Weapon")]
-//    public static void ImportWeapon()
-//    {
-//        string excelPath = "Assets/Editor/ExcelData/WeaponData.xlsx"; // 네 실제 경로로
-//        string outputFolder = "Assets/GameData/Weapons";
-//        DataImporter.Import<WeaponData>(excelPath, outputFolder);
-//    }
-//}
-
+using UnityEngine;
 
 public static class DataImporterMenu
 {
-    [MenuItem("Tools/Excel Import/Weapon")]
-    public static void ImportWeapon()
+    // 경로 상수로 정리 (중복 줄이고 한 곳에서 관리)
+    private const string ExcelPath = "Assets/Editor/ExcelData";
+    private const string DataPath = "Assets/GameData";
+
+    //========== 1-Pass: 변환 (참조 없는 것부터, 순서 무관하지만 논리적으로 배치) ==========
+
+    [MenuItem("Tools/Excel Import/1. Import All")]
+    public static void ImportAll()
     {
         DataImporter.Import<WeaponData>(
-            "Assets/Editor/ExcelData/WeaponData.xlsx",
-            "Assets/GameData/Weapons"
-            );
-    }
+            $"{ExcelPath}/WeaponData.xlsx", $"{DataPath}/Weapons");
 
-    [MenuItem("Tools/Excel Import/AI")]
-    public static void ImportAI()
-    {
+        DataImporter.Import<PlayerData>(
+            $"{ExcelPath}/PlayerData.xlsx", $"{DataPath}/Players");
+
+        DataImporter.Import<AIBehaviorData>(
+            $"{ExcelPath}/AIBehaviorData.xlsx", $"{DataPath}/AIBehaviors");
+
         DataImporter.Import<AIData>(
-            "Assets/Editor/ExcelData/AIData.xlsx",
-            "Assets/GameData/AIs"
-            );
+            $"{ExcelPath}/AIData.xlsx", $"{DataPath}/AIs");
+
+        DataImporter.Import<MatchDropData>(
+            $"{ExcelPath}/MatchDropData.xlsx", $"{DataPath}/MatchDrops");
+
+        DataImporter.Import<MatchProgressionData>(
+            $"{ExcelPath}/MatchProgressionData.xlsx", $"{DataPath}/MatchProgressions");
+
+        DataImporter.Import<MatchData>(
+            $"{ExcelPath}/MatchData.xlsx", $"{DataPath}/Matches");
+
+        Debug.Log("=== 전체 변환(1-Pass) 완료 ===");
     }
 
-    [MenuItem("Tools/Excel Import/Resolve AI References")]
-    public static void ResolveAI()
+    //========== 2-Pass: 참조 연결 (참조 있는 테이블만) ==========
+
+    [MenuItem("Tools/Excel Import/2. Resolve All References")]
+    public static void ResolveAll()
     {
         DataImporter.ResolveReferences<AIData>(
-            "Assets/Editor/ExcelData/AIData.xlsx",   // 실제 경로로
-            "Assets/GameData/AIs",                     // AIData.asset들이 있는 폴더
-            "Assets/GameData/AIBehaviors");           // 참조 대상(Brain_Dumb)이 있는 폴더
+            $"{ExcelPath}/AIData.xlsx", $"{DataPath}/AIs");
+
+        DataImporter.ResolveReferences<MatchDropData>(
+            $"{ExcelPath}/MatchDropData.xlsx", $"{DataPath}/MatchDrops");
+
+        DataImporter.ResolveReferences<MatchProgressionData>(
+            $"{ExcelPath}/MatchProgressionData.xlsx", $"{DataPath}/MatchProgressions");
+        
+        DataImporter.ResolveReferences<MatchData>(
+            $"{ExcelPath}/MatchData.xlsx", $"{DataPath}/Matches");
+        Debug.Log("=== 전체 참조 연결(2-Pass) 완료 ===");
     }
 
-    [MenuItem("Tools/Excel Import/AIBehavior")]
-    public static void ImportAIBehaviorData()
+    // ========== 전체 실행 (1-Pass → 2-Pass 한 번에) ==========
+
+    [MenuItem("Tools/Excel Import/0. Import And Resolve (전체)")]
+    public static void ImportAndResolveAll()
     {
-        DataImporter.Import<AIBehaviorData>(
-            "Assets/Editor/ExcelData/AIBehaviorData.xlsx",
-            "Assets/GameData/AIBehaviors"
-            );
+        ImportAll();
+        ResolveAll();
+        Debug.Log("=== 변환 + 참조 연결 전체 완료 ===");
     }
-
-    [MenuItem("Tools/Excel Import/MatchDrop")]
-    public static void ImportMatchDrop()
-    {
-        DataImporter.Import<MatchDropData>(
-            "Assets/Editor/ExcelData/MatchDropData.xlsx",
-            "Assets/GameData/MatchDrops"
-            );
-    }
-
-    [MenuItem("Tools/Excel Import/MatchProgression")]
-    public static void ImportMatchProgression()
-    {
-        DataImporter.Import<MatchProgressionData>(
-            "Assets/Editor/ExcelData/MatchProgressionData.xlsx",
-            "Assets/GameData/MatchProgressions"
-            );
-    }
-
-    [MenuItem("Tools/Excel Import/Match")]
-    public static void ImportMatch()
-    {
-        DataImporter.Import<MatchData>(
-            "Assets/Editor/ExcelData/MatchData.xlsx",
-            "Assets/GameData/Matches"
-            );
-    }
-
-    [MenuItem("Tools/Excel Import/Player")]
-    public static void ImportPlayer()
-    {
-        DataImporter.Import<PlayerData>(
-            "Assets/Editor/ExcelData/PlayerData.xlsx",
-            "Assets/GameData/Players"
-            );
-    }
-
 }

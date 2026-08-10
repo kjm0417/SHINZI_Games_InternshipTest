@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Reflection;
 using TextMateSharp.Grammars;
 using UnityEditor;
@@ -11,6 +12,24 @@ public static class DataImporter
 {
     //prviate 필드 접근을 위한 처리
     private const BindingFlags FieldFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+    //타입별 "id -> SO" 캐시 (참조 연결용)
+    private static Dictionary<Type, Dictionary<string, ScriptableObject>> _refCache;
+
+    private static void ReadHeaders<T>(DataTable sheet, out string[] headers, out FieldInfo[] fields)
+    {
+        int colCount = sheet.Columns.Count;
+        headers = new string[colCount];
+        fields = new FieldInfo[colCount];
+
+        for (int col = 0; col < colCount; col++)
+        {
+            headers[col] = sheet.Rows[0][col].ToString().Trim();
+            fields[col] = typeof(T).GetField(headers[col], FieldFlags);
+            if (fields[col] == null)
+                Debug.LogWarning($"필드 없음: 헤더 '{headers[col]}'에 해당하는 {typeof(T).Name} 필드가 없어 건너뜀");
+        }
+    }
 
     //엑셀 주소를 가져와서 그 값을 어디 파일에 저장할건지
     public static void Import<T>(string excelPath, string outputFolderPath) where T : ScriptableObject  
@@ -23,24 +42,8 @@ public static class DataImporter
         //파일이 없으면 파일 생성 
         EnsureFolderExists(outputFolderPath);
 
-
+        ReadHeaders<T>(sheet, out string[] headers, out FieldInfo[] fields);
         int colCount = sheet.Columns.Count;
-
-        //헤더 개수에 맞게 배열 정의 필드 정의
-        string[] headers = new string[colCount];
-        FieldInfo[] fields = new FieldInfo[colCount];
-
-        for(int col = 0; col < colCount; col++)
-        {
-            //헤더와 필드를 맞춰서 타입 결정하기
-            headers[col] = sheet.Rows[0][col].ToString().Trim();
-            fields[col] = typeof(T).GetField(headers[col], FieldFlags);
-            if (fields[col] == null)
-            {
-                Debug.LogWarning($"필드 없음: 헤더 {headers[col]}");
-            }
-                
-        }
 
         //데이터(1행부터) 순회
         for (int row = 1; row < sheet.Rows.Count; row++)
@@ -88,6 +91,107 @@ public static class DataImporter
         Debug.Log($"{typeof(T)} 데이터 변환 완료");
     }
 
+
+    //참조가 있는 데이터는 따로 비교 엑셀 주소, 내보낼 주소, SO 주소
+    public static void ResolveReferences<T>(string excelPath, string outputFolderPath) where T : ScriptableObject
+    {
+        DataTable sheet = ExcelReader.Read(excelPath);
+
+        if (sheet == null) return;
+
+        ReadHeaders<T>(sheet, out string[] headers, out FieldInfo[] fields);
+        int colCount = sheet.Columns.Count;
+
+        //이 테이블의 참조 필드들이 어떤 타입을 가리키는지 모아서, 그 타입들 캐시 구축
+        BuildCacheForReferenceFields(fields);
+
+        for (int row = 1; row < sheet.Rows.Count; row++)
+        {
+            string id = sheet.Rows[row][0].ToString().Trim();
+            if (string.IsNullOrEmpty(id)) continue;
+
+            string path = $"{outputFolderPath}/{id}.asset";
+            T data = AssetDatabase.LoadAssetAtPath<T>(path);
+            if (data == null) continue;
+
+            bool changed = false;
+
+            for (int col = 0; col < colCount; col++)
+            {
+                if (fields[col] == null) continue;
+
+                //참조 필드(SO 타입)만 처리
+                if (!typeof(ScriptableObject).IsAssignableFrom(fields[col].FieldType))
+                    continue;
+
+                string refId = sheet.Rows[row][col].ToString().Trim();
+                if (string.IsNullOrEmpty(refId)) continue;
+
+                ScriptableObject refSO = FindFromCache(refId, fields[col].FieldType);
+
+                if (refSO != null)
+                {
+                    fields[col].SetValue(data, refSO);
+                    changed = true;
+                }
+                else
+                {
+                    Debug.LogError($"참조 실패: {row + 1}행 '{headers[col]}'의 '{refId}'({fields[col].FieldType.Name})를 찾을 수 없음");
+                }
+            }
+
+            if (changed)
+            {
+                EditorUtility.SetDirty(data);
+            }    
+        }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log($"{typeof(T).Name} 참조 연결 완료");
+
+    }
+
+    //참조 필드들이 가리키는 타입만 골라, 그 타입들의 캐시를 구축
+    private static void BuildCacheForReferenceFields(FieldInfo[] fields)
+    {
+        _refCache = new Dictionary<Type, Dictionary<string, ScriptableObject>>();
+
+        foreach (FieldInfo field in fields)
+        {
+            if (field == null) continue;
+            Type type = field.FieldType;
+
+            // SO 타입이고, 아직 캐시 안 만든 타입만
+            if (!typeof(ScriptableObject).IsAssignableFrom(type)) continue;
+            if (_refCache.ContainsKey(type)) continue;
+
+            // 이 타입의 모든 SO를 한 번만 검색해 딕셔너리로
+            var map = new Dictionary<string, ScriptableObject>();
+            string[] guids = AssetDatabase.FindAssets($"t:{type.Name}");
+            foreach (string guid in guids)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                string assetId = Path.GetFileNameWithoutExtension(assetPath);
+                var so = AssetDatabase.LoadAssetAtPath(assetPath, type) as ScriptableObject;
+                if (so != null)
+                    map[assetId] = so;
+            }
+            _refCache[type] = map;
+        }
+    }
+
+    //캐시에서 id로 SO 조회 (O(1))
+    private static ScriptableObject FindFromCache(string id, Type type)
+    {
+        if (_refCache.TryGetValue(type, out var map) && map.TryGetValue(id, out var so))
+        {
+            return so;
+        }
+           
+        return null;
+    }
+
     private static object ConvertValue(string raw, Type type, string header, int row)
     {
         if (string.IsNullOrEmpty(raw)) return null;
@@ -97,7 +201,7 @@ public static class DataImporter
             if (type.IsEnum)
             {
                 return Enum.Parse(type, raw);
-            }  
+            }
             return Convert.ChangeType(raw, type);
         }
         catch
@@ -106,77 +210,6 @@ public static class DataImporter
             return null;
         }
     }
-
-    //참조가 있는 데이터는 따로 비교 엑셀 주소, 내보낼 주소, SO 주소
-    public static void ResolveReferences<T>(string excelPath, string outputFolderPath, 
-        string referenceFolderPath) where T : ScriptableObject
-    {
-        DataTable sheet = ExcelReader.Read(excelPath);
-
-        if (sheet == null) return;
-
-        int colCount = sheet.Columns.Count;
-
-        string[] headers = new string[colCount];
-        FieldInfo[] fields = new FieldInfo[colCount];
-
-        for(int col =0; col<colCount;col++)
-        {
-            headers[col] = sheet.Rows[0][col].ToString().Trim();
-            fields[col] = typeof(T).GetField(headers[col], FieldFlags);
-        }
-
-        //데이터 순회
-        for (int row = 1; row < sheet.Rows.Count; row++)
-        {
-            string id = sheet.Rows[row][0].ToString().Trim();
-            if (string.IsNullOrEmpty(id)) continue;
-
-            // 이 행에 해당하는 SO 불러오기 (1-Pass에서 만든 것)
-            string path = $"{outputFolderPath}/{id}.asset";
-            T data = AssetDatabase.LoadAssetAtPath<T>(path);
-            if (data == null) continue;
-
-            bool changed = false;
-
-            // 참조 필드만 처리
-            for (int col = 0; col < colCount; col++)
-            {
-                if (fields[col] == null) continue;
-
-                // SO 타입(참조 필드)만
-                if (!typeof(ScriptableObject).IsAssignableFrom(fields[col].FieldType))
-                    continue;
-
-                string refId = sheet.Rows[row][col].ToString().Trim();
-                if (string.IsNullOrEmpty(refId)) continue;
-
-                // 참조 대상 SO를 id(파일명)로 찾기
-                string refPath = $"{referenceFolderPath}/{refId}.asset";
-                var refSO = AssetDatabase.LoadAssetAtPath(refPath, fields[col].FieldType);
-
-                if (refSO != null)
-                {
-                    fields[col].SetValue(data, refSO);
-                    changed = true;
-                }
-                else
-                {
-                    Debug.LogError($"참조 실패: {row + 1}행 '{headers[col]}'의 '{refId}'에 해당하는 SO를 {refPath}에서 못 찾음");
-                }
-            }
-
-            if (changed)
-                EditorUtility.SetDirty(data);
-        }
-
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-        Debug.Log($"{typeof(T).Name} 참조 연결 완료");
-
-
-    }
-
 
     private static void EnsureFolderExists(string folderPath)
     {

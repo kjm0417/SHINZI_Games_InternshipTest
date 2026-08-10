@@ -9,14 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b1d79d35c533c14ba751db7a58ee455, type: 3}
-  m_Name: Bat
+  m_Script: {fileID: 11500000, guid: c6ad1116e979e1b4b9e22244575ec716, type: 3}
+  m_Name: Prog_Hard
   m_EditorClassIdentifier: 
-  weaponId: Bat
-  weaponType: 0
-  weaponName: "\uC57C\uAD6C\uBC29\uB9DD\uC774"
-  damage: 50
-  attackCooldown: 0
-  range: 2
-  prefabAddressable: 
-  iconAddressable: 
+  progressionId: Prog_Hard
+  minWins: 5
+  aiId: {fileID: 11400000, guid: ff2987f3d5053b940b7614d3790ce81b, type: 2}
+  dropListId: {fileID: 11400000, guid: 2e8d6cf6bcb7529429ace1ff5e6c6b14, type: 2}

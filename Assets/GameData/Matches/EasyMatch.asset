@@ -9,14 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b1d79d35c533c14ba751db7a58ee455, type: 3}
-  m_Name: Bat
+  m_Script: {fileID: 11500000, guid: 4d20e7728337d91468c5e218560ec50d, type: 3}
+  m_Name: EasyMatch
   m_EditorClassIdentifier: 
-  weaponId: Bat
-  weaponType: 0
-  weaponName: "\uC57C\uAD6C\uBC29\uB9DD\uC774"
-  damage: 50
-  attackCooldown: 0
-  range: 2
+  matchId: EasyMatch
+  matchName: "\uC26C\uC6B4 \uB09C\uC774\uB3C4 \uB9E4\uCE58"
+  itemDropCoolTime: 7
+  matchTime: 60
+  progressionId: {fileID: 11400000, guid: 1e5e0c6eb375ea54e8163c34ac9ef289, type: 2}
   prefabAddressable: 
-  iconAddressable: 
