@@ -15,7 +15,7 @@ public class WeaponData : ScriptableObject
     [SerializeField] private string iconAddressable;
 
     //프로퍼티 읽기 전용
-    public string Id => weaponId;
+    public string WeaponId => weaponId;
     public WeaponType WeaponType => weaponType;
     public string WeaponName => weaponName;
     public float Damage => damage;

@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcf7219bab7fe46a1ad266029b2fee19, type: 3}
+  m_Name: Readme
+  m_EditorClassIdentifier: 
+  icon: {fileID: 2800000, guid: 407619c5c19a54982b3880b5a085c597, type: 3}
+  iconMaxWidth: 192
+  title: Lowpoly Toon Modular Characters
+  sections:
+  - heading: About
+    text: Thank you for purchasing the Lowpoly Toon Modular Characters Pack. This lowpoly
+      stylized character is ideal to build your game or prototype.
+    linkText: 
+    url: 
+  - heading: ✓ Optimization
+    text: "This character is extremely light and can be used in both pc and mobile
+      games. All models share a single texture file, allowing you to customize the colors
+      according to your needs just by duplicanting materials and adjusting the material offset. \n\n⚠*Many models have primary, secondary and even tertiary material slots, check the <Materials> option in the [ Inspector > Skinned Mesh Renderer ] to add secondary and/or tertiary materials and customize colors to fit your needs."
+    linkText: 
+    url: 
+  - heading: ✓ Textures
+    text: "Diffuse/Albedo:\n-256px (.png)\n-Additional 1024px (.png)"
+    linkText: 
+    url: 
+  - heading: ✓ Polycount
+    text: "-Body | 792 Tris\n-Baseball cap 01 | 84 Tris\n-Beanie 01 | 72 Tris\n-Beard 01 | 90 Tris\n-Beard 02 | 76 Tris\n-Beard 03 | 74 Tris\n-Beard 04 | 110 Tris\n-Blazer 01 | 396 Tris\n-Boots 01 | 176 Tris\n-Bow tie 01 | 36 Tris\n-Dress 01 | 100 Tris\n-Dress 02 | 290 Tris\n-Ear rings 01 | 112 Tris\n-Ear rings 02 | 144 Tris\n-Eyes 01 | 152 Tris\n-Eyes 02 | 128 Tris\n-Glasses 01 | 204 Tris\n-Glasses 02 | 248 Tris\n-Glasses 03 | 196 Tris\n-Glasses 04 | 292 Tris\n-Gloves 01 | 152 Tris\n-Hair 01 | 98 Tris\n-Hair 02 | 143 Tris\n-Hair 03 | 126 Tris\n-Hair 04 | 188 Tris\n-Hair 05 | 100 Tris\n-Hair 06 | 90 Tris\n-Hair 07 | 87 Tris\n-Hair 08 | 229 Tris\n-Hair 09 | 121 Tris\n-Hair 10 | 284 Tris\n-Hat 01 | 112 Tris\n-Hat 02 | 116 Tris\n-Hat 03 | 124 Tris\n-Hat 04 | 112 Tris\n-Hat 04 flower | 248 Tris\n-Jacket 01 | 340 Tris\n-Moleton 01 | 348 Tris\n-Moleton 02 | 440 Tris\n-Mustache 01 | 40 Tris\n-Mustache 02 | 20 Tris\n-Mustache 03 | 44 Tris\n-Overalls 01 | 432 Tris\n-Overalls 02 | 348 Tris\n-Pants 01 | 300 Tris\n-Pants 02 | 384 Tris\n-Pants 03 | 268 Tris\n-Shirt 01 | 184 Tris\n-Shirt 02 | 360 Tris\n-Shirt 03 | 206 Tris\n-Shirt 04 | 300 Tris\n-Shirt 05 | 256 Tris\n-Shoes 01 | 112 Tris\n-Shoes 02 | 220 Tris\n-Shoes 03 | 164 Tris\n-Shorts 01 | 184 Tris\n-Skirt 01 | 72 Tris\n-Slippers 01 | 242 Tris\n-Slippers 02 | 190 Tris\n-Slippers 03 | 214 Tris\n-Socks 01 | 208 Tris\n-Socks 02 | 176 Tris\n-Tanktop 01 | 144 Tris\n-Tanktop 02 | 160 Tris\n-Tie 01 | 68 Tris\n-Tie 02 | 68 Tris\n-Top 01 | 112 Tris\n-Watch 01 | 112 Tris\n-Watch 02 | 92 Tris\n-Whrist band left | 48 Tris\n-Whrist band right | 48 Tris"
+    linkText: 
+    url: 
+  - heading: ✓ Blendshapes
+    text:  "⚠*Some accessories have a <Size> blendshape so you can adjust to avoid clipping issues with other pieces\n\n⚠*Make sure that the option <Legacy Blend Shape Normals> is checked in the models or set <Blend Shape Normals> to <None> in [ Inspector > Import Settings > Model Tab ] to avoid artifacts when using the blendshapes"
+    linkText:
+    url:
+  - heading: ✓ Animations
+    text:  "- Idle\n-Walk\n-Run\n-Jump\n-Loose\n\n*All models have Humanoid rigs (Rigged/Skinned and Mecanim ready)\n\n⚠*Remember to adjust <Muscle & Settings> in the model´s [Rig > Configure] to adjust overlapping and clipping depending of your source animations."
+    linkText:
+    url:
+  - heading: ✓ Modular Design
+    text:  "This character is designed to be modular, making it easy to create a variety of combinations, allowing you to create unique characters and scenes."
+    linkText:
+    url:
+  - heading:
+    text:  "Each asset has been carefully crafted to add a unique touch to your game project!"
+    linkText:
+    url:
+  - heading: ☎ Contact/Support
+    text: 
+    linkText: Asset Store Profile 
+    url: https://assetstore.unity.com/publishers/20594
+  - heading: 
+    text: 
+    linkText: 
+    url: 
+  loadedLayout: 1

@@ -43,6 +43,15 @@ public static class DataImporterMenu
             );
     }
 
+    [MenuItem("Tools/Excel Import/Resolve AI References")]
+    public static void ResolveAI()
+    {
+        DataImporter.ResolveReferences<AIData>(
+            "Assets/Editor/ExcelData/AIData.xlsx",   // 실제 경로로
+            "Assets/GameData/AIs",                     // AIData.asset들이 있는 폴더
+            "Assets/GameData/AIBehaviors");           // 참조 대상(Brain_Dumb)이 있는 폴더
+    }
+
     [MenuItem("Tools/Excel Import/AIBehavior")]
     public static void ImportAIBehaviorData()
     {
