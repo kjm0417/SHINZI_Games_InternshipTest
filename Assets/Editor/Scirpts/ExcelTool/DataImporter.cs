@@ -31,10 +31,10 @@ public static class DataImporter
         }
     }
 
+    #region Import
     //엑셀 주소를 가져와서 그 값을 어디 파일에 저장할건지
     public static void Import<T>(string excelPath, string outputFolderPath) where T : ScriptableObject  
     {
-        //엑셀 표 읽어오기
         DataTable sheet = ExcelReader.Read(excelPath);
 
         if (sheet == null) return;
@@ -42,6 +42,23 @@ public static class DataImporter
         //파일이 없으면 파일 생성 
         EnsureFolderExists(outputFolderPath);
 
+        if(HasListField<T>())
+        {
+            ImportAsList<T>(sheet, outputFolderPath);
+        }
+        else
+        {
+            ImportNormal<T>(sheet, outputFolderPath);
+        }
+
+        //마지막에 한 번만 저장 (성능: 디스크 쓰기 1회)
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();    
+        Debug.Log($"{typeof(T)} 데이터 변환 완료");
+    }
+
+    private static void ImportNormal<T>(DataTable sheet, string outputFolderPath) where T :ScriptableObject
+    {
         ReadHeaders<T>(sheet, out string[] headers, out FieldInfo[] fields);
         int colCount = sheet.Columns.Count;
 
@@ -60,7 +77,7 @@ public static class DataImporter
             {
                 data = ScriptableObject.CreateInstance<T>();
             }
-               
+
 
             //리플렉션으로 값 채우기
             for (int col = 0; col < colCount; col++)
@@ -75,7 +92,7 @@ public static class DataImporter
                 {
                     fields[col].SetValue(data, converted);
                 }
-                    
+
             }
 
             if (isNew)
@@ -84,13 +101,114 @@ public static class DataImporter
             }
             EditorUtility.SetDirty(data);
         }
-
-        //마지막에 한 번만 저장 (성능: 디스크 쓰기 1회)
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();    
-        Debug.Log($"{typeof(T)} 데이터 변환 완료");
     }
 
+    private static void ImportAsList<T>(DataTable sheet, string outputFolderPath) where T : ScriptableObject
+    {
+        ReadHeaders<T>(sheet, out string[] headers, out FieldInfo[] fields);
+        int colCount = sheet.Columns.Count;
+
+        // 올바른 방식 (SO의 모든 필드에서 직접 찾기)
+        FieldInfo listField = null;
+        Type elementType = null;
+        foreach (FieldInfo field in typeof(T).GetFields(FieldFlags))  // ← SO 전체 필드
+        {
+            if (field.FieldType.IsGenericType &&
+                field.FieldType.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                listField = field;
+                elementType = field.FieldType.GetGenericArguments()[0];
+                break;
+            }
+        }
+
+        // ★ 확인 1: List 필드를 찾았나?
+        Debug.Log($"listField: {listField?.Name ?? "못 찾음"}, elementType: {elementType?.Name ?? "없음"}");
+
+        // ★ 확인 2: 헤더가 뭐뭐인지
+        Debug.Log($"헤더들: {string.Join(", ", headers)}");
+
+        // 그룹핑
+        var groups = new Dictionary<string, List<int>>();
+        var order = new List<string>();
+        for (int row = 1; row < sheet.Rows.Count; row++)
+        {
+            string id = sheet.Rows[row][0].ToString().Trim();
+            if (string.IsNullOrEmpty(id)) continue;
+
+            if (!groups.ContainsKey(id))
+            {
+                groups[id] = new List<int>();
+                order.Add(id);
+            }
+            groups[id].Add(row);
+        }
+
+        // ★ 확인 3: 그룹이 제대로 나뉘었나?
+        foreach (var kv in groups)
+            Debug.Log($"그룹 '{kv.Key}': {kv.Value.Count}개 행");
+
+        foreach (string id in order)
+        {
+            string path = $"{outputFolderPath}/{id}.asset";
+            T data = AssetDatabase.LoadAssetAtPath<T>(path);
+            bool isNew = data == null;
+            if (isNew)
+                data = ScriptableObject.CreateInstance<T>();
+
+            List<int> rowsInGroup = groups[id];
+            int firstRow = rowsInGroup[0];
+
+            for (int col = 0; col < colCount; col++)
+            {
+                if (fields[col] == null) continue;
+                if (fields[col] == listField) continue;
+                if (typeof(ScriptableObject).IsAssignableFrom(fields[col].FieldType)) continue;
+
+                string raw = sheet.Rows[firstRow][col].ToString().Trim();
+                object converted = ConvertValue(raw, fields[col].FieldType, headers[col], firstRow);
+                if (converted != null)
+                    fields[col].SetValue(data, converted);
+            }
+
+            if (listField != null)
+            {
+                var newList = (IList)Activator.CreateInstance(listField.FieldType);
+
+                foreach (int row in rowsInGroup)
+                {
+                    object element = Activator.CreateInstance(elementType);
+
+                    for (int col = 0; col < colCount; col++)
+                    {
+                        FieldInfo elemField = elementType.GetField(headers[col], FieldFlags);
+
+                        // ★ 확인 4: 요소 필드를 찾았나?
+                        Debug.Log($"헤더 '{headers[col]}' → 요소필드: {elemField?.Name ?? "못 찾음"}");
+
+                        if (elemField == null) continue;
+                        if (typeof(ScriptableObject).IsAssignableFrom(elemField.FieldType)) continue;
+
+                        string raw = sheet.Rows[row][col].ToString().Trim();
+                        object converted = ConvertValue(raw, elemField.FieldType, headers[col], row);
+                        if (converted != null)
+                            elemField.SetValue(element, converted);
+                    }
+
+                    newList.Add(element);
+                }
+
+                listField.SetValue(data, newList);
+                Debug.Log($"'{id}'에 요소 {newList.Count}개 추가");
+            }
+
+            if (isNew)
+                AssetDatabase.CreateAsset(data, path);
+            EditorUtility.SetDirty(data);
+        }
+    }
+
+    #endregion
 
     //참조가 있는 데이터는 따로 비교 엑셀 주소, 내보낼 주소, SO 주소
     public static void ResolveReferences<T>(string excelPath, string outputFolderPath) where T : ScriptableObject
@@ -231,4 +349,23 @@ public static class DataImporter
         }
     }
 
+    #region List 판단 메서드
+
+    //판단: 이 SO에 List 필드가 있나?
+    private static bool HasListField<T>()
+    {
+        FieldInfo[] allField = typeof(T).GetFields(FieldFlags);
+        
+        foreach(var field in allField)
+        {
+            if(field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    #endregion
 }

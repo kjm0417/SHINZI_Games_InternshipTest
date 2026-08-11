@@ -6,16 +6,17 @@ public class MatchDropData : ScriptableObject
 {
     [SerializeField] private string dropListId;
     [SerializeField] private List<DropEntry> entries;
-    [SerializeField] private int dropRate; //가중치 중 몇개로 계산하기 위해 int
-
+  
     public string DropListId => dropListId;
-    public List<DropEntry> En => entries;
-    public int DropRate => dropRate;
+    public IReadOnlyList<DropEntry> Entries => entries;
 }
 
 [System.Serializable]
 public class DropEntry
 {
-    [SerializeField] private WeaponData weapon;
+    [SerializeField] private WeaponData weaponId;
     [SerializeField] private int dropRate;
+
+    public WeaponData WeaponId => weaponId;
+    public int DropRate => dropRate;
 }

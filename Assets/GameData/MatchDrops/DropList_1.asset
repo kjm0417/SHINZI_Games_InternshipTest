@@ -13,5 +13,8 @@ MonoBehaviour:
   m_Name: DropList_1
   m_EditorClassIdentifier: 
   dropListId: DropList_1
-  entries: []
-  dropRate: 3
+  entries:
+  - weaponId: {fileID: 0}
+    dropRate: 7
+  - weaponId: {fileID: 0}
+    dropRate: 3
