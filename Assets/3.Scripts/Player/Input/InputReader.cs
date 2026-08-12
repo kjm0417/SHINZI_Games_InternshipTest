@@ -10,19 +10,26 @@ public class InputReader : MonoBehaviour
     public Vector2 MoveInput { get;private set; }
 
     //에임 관련
-    public Vector2 AimScreenPostion { get; private set; }
+    public Vector2 AimScreenPosition { get; private set; }
+    public bool HasAimPosition { get; private set; } 
+
+    //대쉬 관련
+    public bool DashPressed { get; private set; }
+
 
     //인풋액션 저장
     private PlayerInput playerInput;
-    private InputAction moventAction;
+    private InputAction movementAction;
     private InputAction aimAction;
+    private InputAction dashAction;
 
 
     private void Awake()
     {
         playerInput = GetComponent<PlayerInput>();
-        moventAction = playerInput.actions.FindAction("Move", true);
+        movementAction = playerInput.actions.FindAction("Move", true);
         aimAction = playerInput.actions.FindAction("Aim", true);
+        dashAction = playerInput.actions.FindAction("Dash", true);
     }
 
     private void OnEnable()
@@ -39,7 +46,7 @@ public class InputReader : MonoBehaviour
 
     private void OnActionTriggered(InputAction.CallbackContext context)
     {
-        if(context.action == moventAction)
+        if(context.action == movementAction)
         {
             if(context.performed)
             {
@@ -50,12 +57,27 @@ public class InputReader : MonoBehaviour
                 MoveInput = Vector2.zero;
             }
         }
-        else if(context.action == aimAction)
+
+        if (context.action == aimAction && context.performed)
         {
-            if(context.performed)
-            {
-                AimScreenPostion = context.ReadValue<Vector2>();
-            } 
+            AimScreenPosition = context.ReadValue<Vector2>();
+            HasAimPosition = true;
+        }
+
+        if(context.action == dashAction && context.performed)
+        {
+                DashPressed = true;
         }
     }
+
+    #region 대쉬 상태 파악
+    public bool ConsumeDash()
+    {
+        if (!DashPressed) return false;
+
+        DashPressed = false;
+        return true;
+    }
+
+    #endregion
 }

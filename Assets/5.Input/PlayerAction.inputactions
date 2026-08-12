@@ -144,7 +144,7 @@
                 {
                     "name": "",
                     "id": "33d83d83-a456-4d20-81e1-6c4acbad4953",
-                    "path": "<Mouse>/pointerId",
+                    "path": "<Pointer>/position",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

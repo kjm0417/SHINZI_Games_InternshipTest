@@ -7,6 +7,7 @@ public class PlayerData : ScriptableObject
     [SerializeField] private int maxHp;
     [SerializeField] private int speed;
     [SerializeField] private int dashSpeed;
+    [SerializeField] private float dashDuration;
     [SerializeField] private float dashCooldown;
 
 
@@ -16,5 +17,6 @@ public class PlayerData : ScriptableObject
     public int MaxHp => maxHp;
     public int Speed => speed;
     public int DashSpeed => dashSpeed;
+    public float DashDuration => dashDuration;
     public float DashCooldown => dashCooldown;
 }

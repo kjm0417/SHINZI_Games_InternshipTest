@@ -16,5 +16,6 @@ MonoBehaviour:
   maxHp: 100
   speed: 10
   dashSpeed: 20
+  dashDuration: 0.3
   dashCooldown: 4
   prefabAddressable: 
