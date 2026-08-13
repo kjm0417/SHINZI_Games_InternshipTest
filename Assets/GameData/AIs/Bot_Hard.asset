@@ -18,5 +18,6 @@ MonoBehaviour:
   speed: 12
   dashSpeed: 20
   dashCooldown: 2
+  dashDuration: 0.3
   behaviorId: {fileID: 11400000, guid: 03242ad7e28faec4d825569571cf58e8, type: 2}
   prefabAdressable: 

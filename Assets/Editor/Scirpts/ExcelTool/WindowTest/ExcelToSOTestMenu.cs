@@ -27,8 +27,6 @@ public static class DataImporterMenu
         DataImporter.Import<MatchDropData>(
             $"{ExcelPath}/MatchDropData.xlsx", $"{DataPath}/MatchDrops");
 
-        DataImporter.Import<MatchProgressionData>(
-            $"{ExcelPath}/MatchProgressionData.xlsx", $"{DataPath}/MatchProgressions");
 
         DataImporter.Import<MatchData>(
             $"{ExcelPath}/MatchData.xlsx", $"{DataPath}/Matches");
@@ -47,9 +45,6 @@ public static class DataImporterMenu
         DataImporter.ResolveReferences<MatchDropData>(
             $"{ExcelPath}/MatchDropData.xlsx", $"{DataPath}/MatchDrops");
 
-        DataImporter.ResolveReferences<MatchProgressionData>(
-            $"{ExcelPath}/MatchProgressionData.xlsx", $"{DataPath}/MatchProgressions");
-        
         DataImporter.ResolveReferences<MatchData>(
             $"{ExcelPath}/MatchData.xlsx", $"{DataPath}/Matches");
         Debug.Log("=== 전체 참조 연결(2-Pass) 완료 ===");

@@ -9,6 +9,7 @@ public class AIData : ScriptableObject
     [SerializeField] private int speed;
     [SerializeField] private int dashSpeed;
     [SerializeField] private float dashCooldown;
+    [SerializeField] private float dashDuration;
     [SerializeField] private AIBehaviorData behaviorId;
 
 
@@ -20,6 +21,7 @@ public class AIData : ScriptableObject
     public int Speed => speed;
     public int DashSpeed => dashSpeed;
     public float DashCooldown => dashCooldown;
+    public float DashDuration => dashDuration;
     public AIBehaviorData BehaviorId => behaviorId;
 
     public string PrefabAdressable => prefabAdressable;

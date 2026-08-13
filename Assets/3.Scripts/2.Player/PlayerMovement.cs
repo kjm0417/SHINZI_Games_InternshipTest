@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,17 +6,22 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
-    //¬¸¡∂ ∞¸∑√
+    //Ï∞∏Ï°∞ Í¥ÄÎ†®
     [SerializeField] private PlayerData playerData;
     private CharacterController characterController;
 
-    //¿Ãµø ∞¸∑√
+    //Ïù¥Îèô Í¥ÄÎ†®
     private float verticalVelocity;
 
-    //¥ÎΩ¨ ∞¸∑√
-    private float dashRemainingTime; //¥ÎΩ√ ¿‹ø© Ω√∞£
-    private float dashCooldownRemaining; //¥ÎΩ√ ¿ÁªÁøÎ ¥Î±‚Ω√∞£ ¿‹ø©∑Æ
+    //ÎåÄÏâ¨ Í¥ÄÎ†®
+    private float dashRemainingTime; //ÎåÄÏãú ÏûîÏó¨ ÏãúÍ∞Ñ
+    private float dashCooldownRemaining; //ÎåÄÏãú Ïû¨ÏÇ¨Ïö© ÎåÄÍ∏∞ÏãúÍ∞Ñ ÏûîÏó¨Îüâ
     private Vector3 dashDirection;
+
+    //ÎÑâÎ∞± Í¥ÄÎ†®
+    [SerializeField] private float knockbackDecay = 20f;
+    private Vector3 knockbackVelocity;
+
 
     public bool IsDashing => dashRemainingTime > 0f;
     public bool IsDashReady => dashCooldownRemaining <= 0f;
@@ -29,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Tick(Vector2 moveInput, float deltaTime)
     {
-        //¡ˆø™ ∫Øºˆ∑Œ «— ¿Ã¿Ø : Tick ≥°≥™∞Ì ∞™¿∏ πˆ∑¡µµ ªÛ∞¸æ¯¿Ω
+        //ÏßÄÏó≠ Î≥ÄÏàòÎ°ú Ìïú Ïù¥Ïú† : Tick ÎÅùÎÇòÍ≥† Í∞íÏúº Î≤ÑÎ†§ÎèÑ ÏÉÅÍ¥ÄÏóÜÏùå
         Vector3 moveDirection = ConvertToMoveDirection(moveInput);
 
         UpdateDashTimers(deltaTime);
@@ -50,8 +55,11 @@ public class PlayerMovement : MonoBehaviour
         Vector3 finalVelocity = horizontalVelocity +Vector3.up * verticalVelocity;
 
         characterController.Move(finalVelocity * deltaTime);
+
+        UpdateKnockback(deltaTime);
     }
 
+    #region ÎåÄÏâ¨
     public bool TryDash(Vector2 moveInput)
     {
         if (IsDashing || !IsDashReady) return false;
@@ -66,14 +74,6 @@ public class PlayerMovement : MonoBehaviour
 
         return true;
     }
-
-    private Vector3 ConvertToMoveDirection(Vector2 moveInput)
-    {
-        Vector3 direction = new Vector3(moveInput.x, 0f, moveInput.y);
-
-        return Vector3.ClampMagnitude(direction, 1f);
-    }
-
     private void UpdateDashTimers(float deltaTime)
     {
         if (dashRemainingTime > 0f)
@@ -83,16 +83,27 @@ public class PlayerMovement : MonoBehaviour
             if (dashRemainingTime <= 0f)
             {
                 dashDirection = Vector3.zero;
-            }    
+            }
         }
 
         if (dashCooldownRemaining > 0f)
         {
             dashCooldownRemaining = Mathf.Max(0f, dashCooldownRemaining - deltaTime);
-            Debug.Log($"{dashCooldownRemaining}√  ≥≤æ“¿Ω");
+            Debug.Log($"{dashCooldownRemaining}Ï¥à ÎÇ®ÏïòÏùå");
         }
 
     }
+
+    #endregion
+
+    private Vector3 ConvertToMoveDirection(Vector2 moveInput)
+    {
+        Vector3 direction = new Vector3(moveInput.x, 0f, moveInput.y);
+
+        return Vector3.ClampMagnitude(direction, 1f);
+    }
+
+  
 
     private void UpdateGravity(float deltaTime)
     {
@@ -105,6 +116,27 @@ public class PlayerMovement : MonoBehaviour
             verticalVelocity += Physics.gravity.y * deltaTime;
         }
     }
+
+    #region ÎÑâÎ∞±
+    public void ApplyKnockback(Vector3 direction, float power)
+    {
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.001f || power <= 0f)
+        {
+            return;
+        }
+
+        knockbackVelocity = direction.normalized * power;
+    }
+
+    public void UpdateKnockback(float deltaTime)
+    {
+        knockbackVelocity = Vector3.MoveTowards(knockbackVelocity, Vector3.zero, knockbackDecay * deltaTime);
+    }
+
+    #endregion
 }
+
 
 

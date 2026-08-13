@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Reflection;
-using TextMateSharp.Grammars;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,7 +26,10 @@ public static class DataImporter
             headers[col] = sheet.Rows[0][col].ToString().Trim();
             fields[col] = typeof(T).GetField(headers[col], FieldFlags);
             if (fields[col] == null)
+            {
                 Debug.LogWarning($"필드 없음: 헤더 '{headers[col]}'에 해당하는 {typeof(T).Name} 필드가 없어 건너뜀");
+            }
+               
         }
     }
 
@@ -42,9 +44,10 @@ public static class DataImporter
         //파일이 없으면 파일 생성 
         EnsureFolderExists(outputFolderPath);
 
-        if(HasListField<T>())
+        FieldInfo listField = FindListField<T>();
+        if (listField != null)
         {
-            ImportAsList<T>(sheet, outputFolderPath);
+            ImportAsList<T>(sheet, outputFolderPath, listField);
         }
         else
         {
@@ -103,50 +106,15 @@ public static class DataImporter
         }
     }
 
-    private static void ImportAsList<T>(DataTable sheet, string outputFolderPath) where T : ScriptableObject
+    private static void ImportAsList<T>(DataTable sheet, string outputFolderPath, FieldInfo listField) where T : ScriptableObject
     {
         ReadHeaders<T>(sheet, out string[] headers, out FieldInfo[] fields);
         int colCount = sheet.Columns.Count;
 
-        // 올바른 방식 (SO의 모든 필드에서 직접 찾기)
-        FieldInfo listField = null;
-        Type elementType = null;
-        foreach (FieldInfo field in typeof(T).GetFields(FieldFlags))  // ← SO 전체 필드
-        {
-            if (field.FieldType.IsGenericType &&
-                field.FieldType.GetGenericTypeDefinition() == typeof(List<>))
-            {
-                listField = field;
-                elementType = field.FieldType.GetGenericArguments()[0];
-                break;
-            }
-        }
+        Type elementType = listField.FieldType.GetGenericArguments()[0];
 
-        // ★ 확인 1: List 필드를 찾았나?
-        Debug.Log($"listField: {listField?.Name ?? "못 찾음"}, elementType: {elementType?.Name ?? "없음"}");
-
-        // ★ 확인 2: 헤더가 뭐뭐인지
-        Debug.Log($"헤더들: {string.Join(", ", headers)}");
-
-        // 그룹핑
-        var groups = new Dictionary<string, List<int>>();
-        var order = new List<string>();
-        for (int row = 1; row < sheet.Rows.Count; row++)
-        {
-            string id = sheet.Rows[row][0].ToString().Trim();
-            if (string.IsNullOrEmpty(id)) continue;
-
-            if (!groups.ContainsKey(id))
-            {
-                groups[id] = new List<int>();
-                order.Add(id);
-            }
-            groups[id].Add(row);
-        }
-
-        // ★ 확인 3: 그룹이 제대로 나뉘었나?
-        foreach (var kv in groups)
-            Debug.Log($"그룹 '{kv.Key}': {kv.Value.Count}개 행");
+        // 같은 id로 그룹핑
+        Dictionary<string, List<int>> groups = GroupRowsById(sheet, out List<string> order);
 
         foreach (string id in order)
         {
@@ -154,11 +122,14 @@ public static class DataImporter
             T data = AssetDatabase.LoadAssetAtPath<T>(path);
             bool isNew = data == null;
             if (isNew)
+            {
                 data = ScriptableObject.CreateInstance<T>();
+            }
 
             List<int> rowsInGroup = groups[id];
             int firstRow = rowsInGroup[0];
 
+            //일반 필드(List 아닌, 참조 아닌)는 그룹 첫 행에서
             for (int col = 0; col < colCount; col++)
             {
                 if (fields[col] == null) continue;
@@ -171,45 +142,62 @@ public static class DataImporter
                     fields[col].SetValue(data, converted);
             }
 
-            if (listField != null)
+            // List 필드: 그룹의 각 행을 요소로 (참조는 2-Pass에서)
+            var newList = (IList)Activator.CreateInstance(listField.FieldType);
+            foreach (int row in rowsInGroup)
             {
-                var newList = (IList)Activator.CreateInstance(listField.FieldType);
-
-                foreach (int row in rowsInGroup)
+                object element = Activator.CreateInstance(elementType);
+                for (int col = 0; col < colCount; col++)
                 {
-                    object element = Activator.CreateInstance(elementType);
+                    FieldInfo elemField = elementType.GetField(headers[col], FieldFlags);
+                    if (elemField == null) continue;
 
-                    for (int col = 0; col < colCount; col++)
+                    if (typeof(ScriptableObject).IsAssignableFrom(elemField.FieldType)) continue; // 참조 스킵
+
+                    string raw = sheet.Rows[row][col].ToString().Trim();
+                    object converted = ConvertValue(raw, elemField.FieldType, headers[col], row);
+                    if (converted != null)
                     {
-                        FieldInfo elemField = elementType.GetField(headers[col], FieldFlags);
-
-                        // ★ 확인 4: 요소 필드를 찾았나?
-                        Debug.Log($"헤더 '{headers[col]}' → 요소필드: {elemField?.Name ?? "못 찾음"}");
-
-                        if (elemField == null) continue;
-                        if (typeof(ScriptableObject).IsAssignableFrom(elemField.FieldType)) continue;
-
-                        string raw = sheet.Rows[row][col].ToString().Trim();
-                        object converted = ConvertValue(raw, elemField.FieldType, headers[col], row);
-                        if (converted != null)
-                            elemField.SetValue(element, converted);
-                    }
-
-                    newList.Add(element);
+                        elemField.SetValue(element, converted);
+                    }   
                 }
-
-                listField.SetValue(data, newList);
-                Debug.Log($"'{id}'에 요소 {newList.Count}개 추가");
+                newList.Add(element);
             }
+            listField.SetValue(data, newList);
 
             if (isNew)
+            {
                 AssetDatabase.CreateAsset(data, path);
+            }
             EditorUtility.SetDirty(data);
         }
+   
+       
+    }
+
+    // 같은 id(첫 열)로 행 그룹핑 (등장 순서 유지)
+    private static Dictionary<string, List<int>> GroupRowsById(DataTable sheet, out List<string> order)
+    {
+        var groups = new Dictionary<string, List<int>>();
+        order = new List<string>();
+        for (int row = 1; row < sheet.Rows.Count; row++)
+        {
+            string id = sheet.Rows[row][0].ToString().Trim();
+            if (string.IsNullOrEmpty(id)) continue;
+
+            if (!groups.ContainsKey(id))
+            {
+                groups[id] = new List<int>();
+                order.Add(id);
+            }
+            groups[id].Add(row);
+        }
+        return groups;
     }
 
     #endregion
 
+    #region Resolve References
     //참조가 있는 데이터는 따로 비교 엑셀 주소, 내보낼 주소, SO 주소
     public static void ResolveReferences<T>(string excelPath, string outputFolderPath) where T : ScriptableObject
     {
@@ -218,9 +206,26 @@ public static class DataImporter
         if (sheet == null) return;
 
         ReadHeaders<T>(sheet, out string[] headers, out FieldInfo[] fields);
-        int colCount = sheet.Columns.Count;
+        FieldInfo listField = FindListField<T>();
+        if (listField != null)
+        {
+            ResolveListReferences<T>(sheet, outputFolderPath, headers, listField);
+        }   
+        else
+        {
+            ResolveNormalReferences<T>(sheet, outputFolderPath, headers, fields);
+        }
 
-        //이 테이블의 참조 필드들이 어떤 타입을 가리키는지 모아서, 그 타입들 캐시 구축
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log($"{typeof(T).Name} 참조 연결 완료");
+
+    }
+    // SO에 직접 있는 참조 필드 연결 (behaviorId, aiId 등)
+    private static void ResolveNormalReferences<T>(DataTable sheet, string outputFolderPath,
+        string[] headers, FieldInfo[] fields) where T : ScriptableObject
+    {
+        int colCount = sheet.Columns.Count;
         BuildCacheForReferenceFields(fields);
 
         for (int row = 1; row < sheet.Rows.Count; row++)
@@ -233,20 +238,15 @@ public static class DataImporter
             if (data == null) continue;
 
             bool changed = false;
-
             for (int col = 0; col < colCount; col++)
             {
                 if (fields[col] == null) continue;
-
-                //참조 필드(SO 타입)만 처리
-                if (!typeof(ScriptableObject).IsAssignableFrom(fields[col].FieldType))
-                    continue;
+                if (!typeof(ScriptableObject).IsAssignableFrom(fields[col].FieldType)) continue;
 
                 string refId = sheet.Rows[row][col].ToString().Trim();
                 if (string.IsNullOrEmpty(refId)) continue;
 
                 ScriptableObject refSO = FindFromCache(refId, fields[col].FieldType);
-
                 if (refSO != null)
                 {
                     fields[col].SetValue(data, refSO);
@@ -257,19 +257,70 @@ public static class DataImporter
                     Debug.LogError($"참조 실패: {row + 1}행 '{headers[col]}'의 '{refId}'({fields[col].FieldType.Name})를 찾을 수 없음");
                 }
             }
-
-            if (changed)
-            {
-                EditorUtility.SetDirty(data);
-            }    
+            if (changed) EditorUtility.SetDirty(data);
         }
-
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-        Debug.Log($"{typeof(T).Name} 참조 연결 완료");
-
     }
 
+    // 리스트 요소 안의 참조 필드 연결 (DropEntry.weaponId 등)
+    private static void ResolveListReferences<T>(DataTable sheet, string outputFolderPath,
+        string[] headers, FieldInfo listField) where T : ScriptableObject
+    {
+        int colCount = sheet.Columns.Count;
+        Type elementType = listField.FieldType.GetGenericArguments()[0];
+
+        // 요소 타입(DropEntry)의 필드들로 캐시 구축
+        FieldInfo[] elemFields = elementType.GetFields(FieldFlags);
+        BuildCacheForReferenceFields(elemFields);
+
+        Dictionary<string, List<int>> groups = GroupRowsById(sheet, out List<string> order);
+
+        foreach (string id in order)
+        {
+            string path = $"{outputFolderPath}/{id}.asset";
+            T data = AssetDatabase.LoadAssetAtPath<T>(path);
+            if (data == null) continue;
+
+            // SO의 리스트 값 꺼내기 (1-Pass에서 만든 것)
+            IList list = listField.GetValue(data) as IList;
+            if (list == null) continue;
+
+            List<int> rowsInGroup = groups[id];
+            bool changed = false;
+
+            // 리스트 요소와 엑셀 행을 순서대로 매칭
+            for (int i = 0; i < list.Count && i < rowsInGroup.Count; i++)
+            {
+                object element = list[i];
+                int row = rowsInGroup[i];
+
+                for (int col = 0; col < colCount; col++)
+                {
+                    FieldInfo elemField = elementType.GetField(headers[col], FieldFlags);
+                    if (elemField == null) continue;
+                    if (!typeof(ScriptableObject).IsAssignableFrom(elemField.FieldType)) continue; // 참조만
+
+                    string refId = sheet.Rows[row][col].ToString().Trim();
+                    if (string.IsNullOrEmpty(refId)) continue;
+
+                    ScriptableObject refSO = FindFromCache(refId, elemField.FieldType);
+                    if (refSO != null)
+                    {
+                        elemField.SetValue(element, refSO);
+                        changed = true;
+                    }
+                    else
+                    {
+                        Debug.LogError($"참조 실패: {row + 1}행 '{headers[col]}'의 '{refId}'({elemField.FieldType.Name})를 찾을 수 없음");
+                    }
+                }
+                list[i] = element; // 값 타입 대비 재할당
+            }
+
+            if (changed) EditorUtility.SetDirty(data);
+        }
+    }
+
+    #endregion
     //참조 필드들이 가리키는 타입만 골라, 그 타입들의 캐시를 구축
     private static void BuildCacheForReferenceFields(FieldInfo[] fields)
     {
@@ -351,20 +402,15 @@ public static class DataImporter
 
     #region List 판단 메서드
 
-    //판단: 이 SO에 List 필드가 있나?
-    private static bool HasListField<T>()
+    // List 필드를 찾아 반환 (없으면 null)
+    private static FieldInfo FindListField<T>()
     {
-        FieldInfo[] allField = typeof(T).GetFields(FieldFlags);
-        
-        foreach(var field in allField)
+        foreach (FieldInfo field in typeof(T).GetFields(FieldFlags))
         {
-            if(field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == typeof(List<>))
-            {
-                return true;
-            }
+            if (field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == typeof(List<>))
+                return field;
         }
-
-        return false;
+        return null;
     }
 
     #endregion

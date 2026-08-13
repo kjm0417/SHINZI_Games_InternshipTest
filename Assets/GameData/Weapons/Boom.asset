@@ -18,5 +18,6 @@ MonoBehaviour:
   damage: 30
   attackCooldown: 3
   range: 7
+  knockbackPower: 7
   prefabAddressable: 
   iconAddressable: 
