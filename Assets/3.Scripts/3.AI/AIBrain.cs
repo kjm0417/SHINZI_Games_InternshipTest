@@ -2,25 +2,46 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AIBrain : MonoBehaviour
+public enum AIState
 {
-    public Vector3 MoveDirection { get; private set; }
-    public bool WantsToDash { get; private set; }
+    Idle,
+    SeekWeapon,
+    Chase,
+    Dead
+}
 
-    // Start is called before the first frame update
-    void Start()
+public class AIBrain 
+{
+    public AIState CurrentState { get; private set; }
+    public Transform CurrentTarget { get; private set; }
+
+    public void Decide(Transform playerTarget, WeaponPickup weaponPickup, WeaponData currentWeapon)
     {
-        
+        if (CurrentState == AIState.Dead) return;
+
+        bool canChangeWeapon = weaponPickup != null  && weaponPickup.IsAvailable &&
+            (currentWeapon == null || currentWeapon.WeaponId != weaponPickup.Data.WeaponId);
+
+        if (canChangeWeapon)
+        {
+            CurrentState = AIState.SeekWeapon;
+            CurrentTarget = weaponPickup.transform;
+            return;
+        }
+
+        if (playerTarget != null)
+        {
+            CurrentState = AIState.Chase;
+            CurrentTarget = playerTarget;
+            return;
+        }
+
+        CurrentState = AIState.Idle;
+        CurrentTarget = null;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetDead()
     {
-        
-    }
-
-    public void Tick(Transform self, Transform target, AIData data, float deltaTime)
-    {
-
+        CurrentState = AIState.Dead;
     }
 }

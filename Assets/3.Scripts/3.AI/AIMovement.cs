@@ -4,18 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(NavMeshAgent))]
 public class AIMovement : MonoBehaviour
 {
     [SerializeField] private AIData aiData;
-    private CharacterController characterController;
-    private NavMeshAgent navMeshAgent;
-    
+    private NavMeshAgent agent;
+
+    public bool HasReachedDestination { get; }
+
     void Awake()
     {
-        characterController = GetComponent<CharacterController>();
-        navMeshAgent = GetComponent<NavMeshAgent>();
+        agent = GetComponent<NavMeshAgent>();
     }
 
     void Update()
@@ -23,18 +22,34 @@ public class AIMovement : MonoBehaviour
         
     }
 
-    public void Tick(Vector3 moveDirection, float deltaTime)
+    public void Initialize(float speed, float stoppingDistance)
     {
 
     }
 
-    public bool TryDash(Vector3 direction)
+    public bool SetDestination(Vector3 destination)
     {
-        return false;
+        if(agent.enabled && agent.isOnNavMesh)
+        {
+
+        }
+        return true;
     }
 
-    public void ApplyKnockback(Vector3 direction, float power)
+    public void MoveTo(Vector3 destionation)
     {
+        if (!agent.isOnNavMesh) return;
 
+        agent.isStopped = false;
+        agent.SetDestination(destionation);
     }
+
+    public void Stop()
+    {
+        if (!agent.isOnNavMesh) return;
+
+        agent.isStopped = true;
+    }
+
+    
 }
