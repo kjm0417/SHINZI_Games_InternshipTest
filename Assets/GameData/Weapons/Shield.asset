@@ -19,5 +19,5 @@ MonoBehaviour:
   attackCooldown: 0
   range: 2
   knockbackPower: 0
-  prefabAddressable: 
+  prefabAddressable: Weapons/Shield
   iconAddressable: 

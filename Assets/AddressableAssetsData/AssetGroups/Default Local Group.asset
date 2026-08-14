@@ -16,7 +16,27 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: b552780000faca245aa9e65c2c17d6e7
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 5673ec084d4129646b2eb45c4e3057c4
+    m_Address: Weapons/Shield
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5eed6478d43ac0b41a9abc9e1e35c57f
+    m_Address: Weapons/Bow
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9875a8fe734076a4485d5a6b3e7223f1
+    m_Address: Weapons/Hammer
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f67204321aef39a4c9d0230dfb062de0
+    m_Address: Weapons/Sword
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: c91206795e04d6042adab10446f0dab9, type: 2}
   m_SchemaSet:

@@ -19,5 +19,5 @@ MonoBehaviour:
   attackCooldown: 2
   range: 3
   knockbackPower: 5
-  prefabAddressable: 
+  prefabAddressable: Weapons/Hammer
   iconAddressable: 

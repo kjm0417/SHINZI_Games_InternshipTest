@@ -18,7 +18,7 @@ MonoBehaviour:
     dropRate: 2
   - weaponId: {fileID: 11400000, guid: f4510d191c5f574419659aed77f72b0d, type: 2}
     dropRate: 3
-  - weaponId: {fileID: 11400000, guid: c352e232957a34846ac68f072b5bdcad, type: 2}
+  - weaponId: {fileID: 11400000, guid: c6122a296b6f6e742bc3620a1c4031d4, type: 2}
     dropRate: 3
   - weaponId: {fileID: 11400000, guid: 1953e8a5401370c48bf64d04aa060c55, type: 2}
     dropRate: 4

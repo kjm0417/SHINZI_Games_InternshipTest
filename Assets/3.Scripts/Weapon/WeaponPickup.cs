@@ -7,6 +7,7 @@ public class WeaponPickup : MonoBehaviour
     [SerializeField] private WeaponData weaponData;
     public bool IsAvailable => isActiveAndEnabled && weaponData != null;
 
+    
     public WeaponData Data => weaponData;
 
     private void OnTriggerEnter(Collider collider)
