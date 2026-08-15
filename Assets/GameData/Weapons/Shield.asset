@@ -16,9 +16,10 @@ MonoBehaviour:
   weaponType: 0
   weaponName: "\uBC29\uD328"
   damage: 20
-  attackCooldown: 0
-  attackDuration: 0
+  attackCooldown: 0.2
+  attackDuration: 0.5
   range: 2
-  knockbackPower: 0
+  knockbackPower: 10
+  projectileId: {fileID: 0}
   prefabAddressable: Weapons/Shield
   iconAddressable: 

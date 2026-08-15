@@ -7,6 +7,8 @@ public class HitBoxWeaponRuntime : WeaponRuntime
 {
     [SerializeField] private Collider hitbox;
 
+    private Coroutine attackCoroutine;
+
     //피격 기록
     private readonly HashSet<CharacterDamageReceiver> hitTargets = new();
 
@@ -17,7 +19,11 @@ public class HitBoxWeaponRuntime : WeaponRuntime
 
     private void OnDisable()
     {
-        StopCoroutine(AttackRoutine());
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+        }
 
         if (hitbox != null)
         {
@@ -32,7 +38,7 @@ public class HitBoxWeaponRuntime : WeaponRuntime
     {
         if (IsAttacking) return;
 
-        StartCoroutine(AttackRoutine());
+        attackCoroutine = StartCoroutine(AttackRoutine());
     }
 
     private IEnumerator AttackRoutine()
@@ -45,6 +51,7 @@ public class HitBoxWeaponRuntime : WeaponRuntime
 
         hitbox.enabled = false;
         IsAttacking = false;
+        attackCoroutine = null;
     }
 
     private void OnTriggerEnter(Collider collider)

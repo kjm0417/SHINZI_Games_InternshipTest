@@ -11,6 +11,7 @@ public class WeaponData : ScriptableObject
     [SerializeField] private float attackDuration;
     [SerializeField] private float range;
     [SerializeField] private int knockbackPower;
+    [SerializeField] private ProjectileData projectileId;
 
     [Tooltip("ÁÖ¼Ò°ª")]
     [SerializeField] private string prefabAddressable;
@@ -24,8 +25,8 @@ public class WeaponData : ScriptableObject
     public float AttackCooldown => attackCooldown;
     public float AttackDuration => attackDuration;
     public float Range => range;
-
     public int KnockbackPower => knockbackPower;
+    public ProjectileData ProjectileId => projectileId;
     public string PrefabAddressable => prefabAddressable;
     public string IconAddressable => iconAddressable;
 

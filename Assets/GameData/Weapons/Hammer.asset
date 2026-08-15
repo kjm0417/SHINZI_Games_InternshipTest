@@ -19,6 +19,7 @@ MonoBehaviour:
   attackCooldown: 2
   attackDuration: 1
   range: 3
-  knockbackPower: 5
+  knockbackPower: 12
+  projectileId: {fileID: 0}
   prefabAddressable: Weapons/Hammer
   iconAddressable: 

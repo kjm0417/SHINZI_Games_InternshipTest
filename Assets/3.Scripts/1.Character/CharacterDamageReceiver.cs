@@ -6,12 +6,12 @@ public class CharacterDamageReceiver : MonoBehaviour
 {
     //필요한 정보
     [SerializeField] private CharacterHealthSystem healthSystem;
-    [SerializeField] private PlayerMovement movement;
+    private IKnockbackReceiver knockbackReceiver;
 
     private void Awake()
     {
         if (healthSystem == null) healthSystem = GetComponent<CharacterHealthSystem>();
-        if (movement == null) movement = GetComponent<PlayerMovement>();
+        if (knockbackReceiver == null) knockbackReceiver = GetComponent<IKnockbackReceiver>();
     }
 
     public void ReceiveDamage(DamageInfo info)
@@ -22,7 +22,7 @@ public class CharacterDamageReceiver : MonoBehaviour
 
         if (info.KnockbackPower > 0f)
         {
-            movement.ApplyKnockback(info.KnockbackDirection,info.KnockbackPower);
+            knockbackReceiver.ApplyKnockback( info.KnockbackDirection, info.KnockbackPower);
         }
 
     }

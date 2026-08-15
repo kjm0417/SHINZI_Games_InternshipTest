@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IKnockbackReceiver
 {
     //참조 관련
     [SerializeField] private PlayerData playerData;
@@ -32,6 +32,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+
+
     public void Tick(Vector2 moveInput, float deltaTime)
     {
         //지역 변수로 한 이유 : Tick 끝나고 값으 버려도 상관없음
@@ -52,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
 
         UpdateGravity(deltaTime);
 
-        Vector3 finalVelocity = horizontalVelocity +Vector3.up * verticalVelocity;
+        Vector3 finalVelocity = horizontalVelocity + knockbackVelocity + Vector3.up * verticalVelocity;
 
         characterController.Move(finalVelocity * deltaTime);
 

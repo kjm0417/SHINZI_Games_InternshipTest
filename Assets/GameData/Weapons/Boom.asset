@@ -19,6 +19,7 @@ MonoBehaviour:
   attackCooldown: 3
   attackDuration: 0.6
   range: 6
-  knockbackPower: 8
+  knockbackPower: 14
+  projectileId: {fileID: 0}
   prefabAddressable: 
   iconAddressable: 

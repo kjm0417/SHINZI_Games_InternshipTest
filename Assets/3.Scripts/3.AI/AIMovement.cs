@@ -5,10 +5,14 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class AIMovement : MonoBehaviour
+public class AIMovement : MonoBehaviour, IKnockbackReceiver
 {
     [SerializeField] private AIData aiData;
     private NavMeshAgent agent;
+
+    //³Ë¹é °ü·Ã
+    [SerializeField] private float knockbackDecay = 20f;
+    private Vector3 knockbackVelocity;
 
     public bool HasReachedDestination { get; }
 
@@ -19,8 +23,10 @@ public class AIMovement : MonoBehaviour
 
     void Update()
     {
-        
+        UpdateKnockback(Time.deltaTime);
     }
+
+    
 
     public void Initialize(float speed, float stoppingDistance)
     {
@@ -51,5 +57,28 @@ public class AIMovement : MonoBehaviour
         agent.isStopped = true;
     }
 
-    
+    public void ApplyKnockback(Vector3 direction, float power)
+    {
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.001f || power <= 0f) return;
+
+        knockbackVelocity = direction.normalized * power;
+    }
+    private void UpdateKnockback(float deltaTime)
+    {
+        if (!agent.enabled || !agent.isOnNavMesh)
+        {
+            knockbackVelocity = Vector3.zero;
+            return;
+        }
+
+        if (knockbackVelocity.sqrMagnitude < 0.001f) return;
+
+        agent.Move(knockbackVelocity * deltaTime);
+
+        knockbackVelocity = Vector3.MoveTowards( knockbackVelocity, Vector3.zero, knockbackDecay * deltaTime);
+
+        
+    }
 }

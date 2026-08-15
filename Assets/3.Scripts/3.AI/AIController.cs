@@ -11,6 +11,7 @@ public class AIController : MonoBehaviour
     [SerializeField] private AIMovement movement;
     [SerializeField] private CharacterHealthSystem healthSystem;
     [SerializeField] private WeaponPickup weaponPickup;
+    [SerializeField] private CharacterCombat combat;
     private AIBrain brain;
     private CharacterWeaponHolder weaponHolder;
 
@@ -20,8 +21,9 @@ public class AIController : MonoBehaviour
     private void Awake()
     {
         brain = new AIBrain();
-        weaponHolder = GetComponentInChildren<CharacterWeaponHolder>();
-        if(target ==null) target = GameObject.FindGameObjectWithTag("Player").transform;
+        weaponHolder = GetComponent<CharacterWeaponHolder>();
+        if (combat == null) combat = GetComponent<CharacterCombat>();
+        if (target ==null) target = GameObject.FindGameObjectWithTag("Player").transform;
         
     }
 
@@ -50,7 +52,7 @@ public class AIController : MonoBehaviour
         if (decisionTimer > 0f) return;
 
         decisionTimer = aiData.BehaviorId.ReactionTime;
-        brain.Decide(target, weaponPickup, weaponHolder.CurrentWeapon);
+        brain.Decide(target,transform.position, weaponPickup, weaponHolder.CurrentWeapon);
         ExecuteState();
     }
 
@@ -69,6 +71,10 @@ public class AIController : MonoBehaviour
                 {
                     movement.MoveTo(brain.CurrentTarget.position);
                 }
+                break;
+            case AIState.Engage:
+                movement.Stop(); //테스트용 Stop
+                combat.TryAttack();
                 break;
 
 

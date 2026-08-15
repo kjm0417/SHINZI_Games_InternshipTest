@@ -31,6 +31,9 @@ public static class DataImporterMenu
         DataImporter.Import<MatchData>(
             $"{ExcelPath}/MatchData.xlsx", $"{DataPath}/Matches");
 
+        DataImporter.Import<ProjectileData>(
+            $"{ExcelPath}/ProjectileData.xlsx", $"{DataPath}/Projectiles");
+
         Debug.Log("=== 전체 변환(1-Pass) 완료 ===");
     }
 
@@ -39,6 +42,9 @@ public static class DataImporterMenu
     [MenuItem("Tools/Excel Import/2. Resolve All References")]
     public static void ResolveAll()
     {
+        DataImporter.ResolveReferences<WeaponData>(
+            $"{ExcelPath}/WeaponData.xlsx", $"{DataPath}/Weapons");
+
         DataImporter.ResolveReferences<AIData>(
             $"{ExcelPath}/AIData.xlsx", $"{DataPath}/AIs");
 
@@ -46,7 +52,9 @@ public static class DataImporterMenu
             $"{ExcelPath}/MatchDropData.xlsx", $"{DataPath}/MatchDrops");
 
         DataImporter.ResolveReferences<MatchData>(
-            $"{ExcelPath}/MatchData.xlsx", $"{DataPath}/Matches");
+            $"{ExcelPath}/MatchData.xlsx", $"{DataPath}/Matches");  
+
+
         Debug.Log("=== 전체 참조 연결(2-Pass) 완료 ===");
     }
 

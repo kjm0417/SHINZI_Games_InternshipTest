@@ -8,7 +8,12 @@ public class ProjectileWeaponRuntime : WeaponRuntime
 
     public override void ExecuteAttack()
     {
-        
+        if (IsAttacking) return;
+
+        if (WeaponData == null || WeaponData.ProjectileId == null || Owner == null || spawnPoint == null)
+        {
+            return;
+        }
     }
 
    
