@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4140557005408218078}
   - component: {fileID: 1906555002044458032}
   - component: {fileID: 7031664255331065427}
-  - component: {fileID: 1671418426816251475}
+  - component: {fileID: 5554486480310166335}
   m_Layer: 0
   m_Name: Arrow
   m_TagString: Untagged
@@ -83,7 +83,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.03, y: 0.03, z: 0.6}
   m_Center: {x: 0, y: 0, z: 0.3}
---- !u!114 &1671418426816251475
+--- !u!114 &5554486480310166335
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -92,10 +92,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2552724926868432148}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 059b964dda105c54887a8af668989f7f, type: 3}
+  m_Script: {fileID: 11500000, guid: 0bd78fb79159291458ecd9562409f044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rigidBody: {fileID: 1906555002044458032}
+  rigidbody: {fileID: 1906555002044458032}
 --- !u!1 &5834048122730046802
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,7 +124,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 1, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4140557005408218078}

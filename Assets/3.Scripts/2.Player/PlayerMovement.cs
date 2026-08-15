@@ -34,23 +34,34 @@ public class PlayerMovement : MonoBehaviour, IKnockbackReceiver
 
 
 
-    public void Tick(Vector2 moveInput, float deltaTime)
+    public void Tick(Vector2 moveInput, float deltaTime, bool canMove)
     {
-        //지역 변수로 한 이유 : Tick 끝나고 값으 버려도 상관없음
-        Vector3 moveDirection = ConvertToMoveDirection(moveInput);
-
+        //대시 지속시간과 쿨타임 감소
         UpdateDashTimers(deltaTime);
 
-        Vector3 horizontalVelocity;
-        if (IsDashing)
+        if (!canMove)
         {
-            horizontalVelocity =  dashDirection * playerData.DashSpeed;
+            dashRemainingTime = 0f;
+            dashDirection = Vector3.zero;
+        }
+
+        //지역 변수로 한 이유 : Tick 끝나고 값으 버려도 상관없음
+        Vector3 moveDirection = canMove ? ConvertToMoveDirection(moveInput) : Vector3.zero;
+
+        Vector3 horizontalVelocity;
+
+        if (!canMove)
+        {
+            horizontalVelocity = Vector3.zero;
+        }
+        else if (IsDashing)
+        {
+            horizontalVelocity = dashDirection * playerData.DashSpeed;
         }
         else
         {
             horizontalVelocity = moveDirection * playerData.Speed;
         }
-
 
         UpdateGravity(deltaTime);
 
@@ -91,7 +102,6 @@ public class PlayerMovement : MonoBehaviour, IKnockbackReceiver
         if (dashCooldownRemaining > 0f)
         {
             dashCooldownRemaining = Mathf.Max(0f, dashCooldownRemaining - deltaTime);
-            Debug.Log($"{dashCooldownRemaining}초 남았음");
         }
 
     }

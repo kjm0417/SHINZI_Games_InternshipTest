@@ -10,9 +10,15 @@ public class CharacterCombat : MonoBehaviour
 
     private float cooldownRemaining;
 
+    //공격 할 수 있는지
     public bool CanAttack => weaponholder.HasWeapon && cooldownRemaining <= 0f 
         && weaponView.CurrentRuntime!=null 
         && !weaponView.CurrentRuntime.IsAttacking;
+
+    //움직임 막기
+    public bool BlocksMovement =>
+    weaponView.CurrentRuntime != null &&
+    weaponView.CurrentRuntime.BlocksMovement;
 
     //이벤트
     public event Action<WeaponData> AttackStarted;

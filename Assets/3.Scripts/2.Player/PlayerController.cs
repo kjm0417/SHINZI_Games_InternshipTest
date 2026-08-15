@@ -39,17 +39,16 @@ public class PlayerController : MonoBehaviour
     //캐릭터 컨트롤러는 어디 위치로 이동해라 이기때문에 fixUpdate말고 Update를 사용
     private void Update()
     {
-        HandleDash();
-        HandleMovement();
         HandleAim();
         HandleAttack();
-
+        HandleDash();
+        HandleMovement();
 
     }
 
     private void HandleMovement()
     {
-        movement.Tick(inputReader.MoveInput, Time.deltaTime);
+        movement.Tick(inputReader.MoveInput, Time.deltaTime, !combat.BlocksMovement);
     }
 
     private void HandleAim()
@@ -62,6 +61,7 @@ public class PlayerController : MonoBehaviour
     private void HandleDash()
     {
         if (!inputReader.ConsumeDash()) return;
+        if (combat.BlocksMovement) return;
 
         movement.TryDash(inputReader.MoveInput);
     }
