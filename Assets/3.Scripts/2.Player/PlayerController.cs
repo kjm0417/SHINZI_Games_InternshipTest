@@ -39,6 +39,8 @@ public class PlayerController : MonoBehaviour
     //캐릭터 컨트롤러는 어디 위치로 이동해라 이기때문에 fixUpdate말고 Update를 사용
     private void Update()
     {
+        if (healthSystem.IsDead) return;
+
         HandleAim();
         HandleAttack();
         HandleDash();
