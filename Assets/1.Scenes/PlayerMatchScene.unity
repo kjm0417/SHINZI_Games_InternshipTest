@@ -2686,6 +2686,7 @@ GameObject:
   - component: {fileID: 774140479220205215}
   - component: {fileID: 774140479220205217}
   - component: {fileID: 774140479220205216}
+  - component: {fileID: 774140479220205218}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -2804,6 +2805,7 @@ MonoBehaviour:
   inputReader: {fileID: 774140479220205211}
   movement: {fileID: 774140479220205213}
   aim: {fileID: 774140479220205212}
+  combat: {fileID: 774140479220205218}
   playerData: {fileID: 11400000, guid: b710a6662cd641e439e6639c1206f9aa, type: 2}
   healthSystem: {fileID: 774140479220205215}
 --- !u!114 &774140479220205215
@@ -2844,6 +2846,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponHolder: {fileID: 774140479220205216}
   weaponSocket: {fileID: 1260015027}
+--- !u!114 &774140479220205218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 774140479220205208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd47acb845065db48a7717856cb97ffc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponholder: {fileID: 774140479220205216}
+  weaponView: {fileID: 774140479220205217}
 --- !u!1 &804389029686559819
 GameObject:
   m_ObjectHideFlags: 0
@@ -3557,7 +3573,6 @@ GameObject:
   - component: {fileID: 4631254873094018014}
   - component: {fileID: 4631254873094018013}
   - component: {fileID: 4631254873094018019}
-  - component: {fileID: 4631254873094018018}
   - component: {fileID: 4631254873094018017}
   - component: {fileID: 4631254873094018016}
   - component: {fileID: 4631254873094018015}
@@ -4664,32 +4679,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aiData: {fileID: 11400000, guid: b26a4eb878a2e7947882932b4864ad6c, type: 2}
---- !u!143 &4631254873094018018
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2156795124629984028}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 1.85
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!114 &4631254873094018019
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -8,6 +8,7 @@ public class WeaponData : ScriptableObject
     [SerializeField] private string weaponName;
     [SerializeField] private float damage;
     [SerializeField] private float attackCooldown;
+    [SerializeField] private float attackDuration;
     [SerializeField] private float range;
     [SerializeField] private int knockbackPower;
 
@@ -20,7 +21,8 @@ public class WeaponData : ScriptableObject
     public WeaponType WeaponType => weaponType;
     public string WeaponName => weaponName;
     public float Damage => damage;
-    public float AttackCooldawn => attackCooldown;
+    public float AttackCooldown => attackCooldown;
+    public float AttackDuration => attackDuration;
     public float Range => range;
 
     public int KnockbackPower => knockbackPower;

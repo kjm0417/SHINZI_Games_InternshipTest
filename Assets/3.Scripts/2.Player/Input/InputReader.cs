@@ -16,12 +16,15 @@ public class InputReader : MonoBehaviour
     //대쉬 관련
     public bool DashPressed { get; private set; }
 
+    //공격 관련
+    public bool AttackPressed { get; private set; }
 
     //인풋액션 저장
     private PlayerInput playerInput;
     private InputAction movementAction;
     private InputAction aimAction;
     private InputAction dashAction;
+    private InputAction attackAction;
 
 
     private void Awake()
@@ -30,6 +33,7 @@ public class InputReader : MonoBehaviour
         movementAction = playerInput.actions.FindAction("Move", true);
         aimAction = playerInput.actions.FindAction("Aim", true);
         dashAction = playerInput.actions.FindAction("Dash", true);
+        attackAction = playerInput.actions.FindAction("Attack", true);
     }
 
     private void OnEnable()
@@ -66,11 +70,16 @@ public class InputReader : MonoBehaviour
 
         if(context.action == dashAction && context.performed)
         {
-                DashPressed = true;
+            DashPressed = true;
         }
+
+        if(context.action == attackAction && context.performed)
+        {
+            AttackPressed = true;
+        }
+
     }
 
-    #region 대쉬 상태 파악
     public bool ConsumeDash()
     {
         if (!DashPressed) return false;
@@ -79,5 +88,11 @@ public class InputReader : MonoBehaviour
         return true;
     }
 
-    #endregion
+    public bool ConsumeAttack()
+    {
+        if (!AttackPressed) return false;
+
+        AttackPressed = false;
+        return true;
+    }
 }

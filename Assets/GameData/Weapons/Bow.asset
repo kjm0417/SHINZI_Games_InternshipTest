@@ -17,6 +17,7 @@ MonoBehaviour:
   weaponName: "\uD65C"
   damage: 20
   attackCooldown: 1.5
+  attackDuration: 0.3
   range: 10
   knockbackPower: 1
   prefabAddressable: Weapons/Bow

@@ -10,6 +10,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerMovement movement;
     [SerializeField] private PlayerAim aim;
 
+    //공격 관련
+    [SerializeField] private CharacterCombat combat;
+
     //체력 관련 정보
     [SerializeField] private PlayerData playerData;
     [SerializeField] private CharacterHealthSystem healthSystem;
@@ -19,8 +22,12 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         if (inputReader == null) inputReader = GetComponent<InputReader>();
+
         if (movement == null) movement = GetComponent<PlayerMovement>();
         if (aim == null) aim = GetComponent<PlayerAim>();
+
+        if (combat == null) combat = GetComponentInChildren<CharacterCombat>();
+
         if (healthSystem == null) healthSystem = GetComponent<CharacterHealthSystem>();
     }
 
@@ -35,7 +42,9 @@ public class PlayerController : MonoBehaviour
         HandleDash();
         HandleMovement();
         HandleAim();
-        
+        HandleAttack();
+
+
     }
 
     private void HandleMovement()
@@ -55,5 +64,12 @@ public class PlayerController : MonoBehaviour
         if (!inputReader.ConsumeDash()) return;
 
         movement.TryDash(inputReader.MoveInput);
+    }
+
+    private void HandleAttack()
+    {
+        if (!inputReader.ConsumeAttack()) return;
+
+        combat.TryAttack();
     }
 }

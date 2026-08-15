@@ -1,9 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 //실제로 어떤 무기를 보유하고있는지 관리
 public class CharacterWeaponHolder : MonoBehaviour

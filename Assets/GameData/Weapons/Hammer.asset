@@ -17,6 +17,7 @@ MonoBehaviour:
   weaponName: "\uB9DD\uCE58"
   damage: 40
   attackCooldown: 2
+  attackDuration: 1
   range: 3
   knockbackPower: 5
   prefabAddressable: Weapons/Hammer

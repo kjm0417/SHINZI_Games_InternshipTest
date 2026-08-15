@@ -17,6 +17,7 @@ MonoBehaviour:
   weaponName: "\uAC80"
   damage: 30
   attackCooldown: 1
+  attackDuration: 0.5
   range: 4
   knockbackPower: 3
   prefabAddressable: Weapons/Sword

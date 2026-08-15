@@ -17,6 +17,7 @@ MonoBehaviour:
   weaponName: "\uD3ED\uD0C4"
   damage: 40
   attackCooldown: 3
+  attackDuration: 0.6
   range: 6
   knockbackPower: 8
   prefabAddressable: 

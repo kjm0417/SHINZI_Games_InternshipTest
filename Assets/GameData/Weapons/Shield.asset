@@ -17,6 +17,7 @@ MonoBehaviour:
   weaponName: "\uBC29\uD328"
   damage: 20
   attackCooldown: 0
+  attackDuration: 0
   range: 2
   knockbackPower: 0
   prefabAddressable: Weapons/Shield
