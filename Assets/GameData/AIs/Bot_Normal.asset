@@ -20,4 +20,4 @@ MonoBehaviour:
   dashCooldown: 3
   dashDuration: 0.3
   behaviorId: {fileID: 11400000, guid: d8f60a3ed6dcb2b47af56f06ac0b57f6, type: 2}
-  prefabAdressable: 
+  prefabAdressable: Characters/AI_Normal

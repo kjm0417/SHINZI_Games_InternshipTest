@@ -19,4 +19,5 @@ public class PlayerData : ScriptableObject
     public int DashSpeed => dashSpeed;
     public float DashDuration => dashDuration;
     public float DashCooldown => dashCooldown;
+    public string PrefabAddressable => prefabAddressable;
 }

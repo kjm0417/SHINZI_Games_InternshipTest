@@ -47,6 +47,7 @@ public class CharacterHealthSystem : MonoBehaviour
     }
 
     //테스트용
+    [ContextMenu("Kill")]
     public void Kill()
     {
         TakeDamage(CurrentHealth);

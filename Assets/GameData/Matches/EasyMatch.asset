@@ -16,7 +16,7 @@ MonoBehaviour:
   matchName: "\uC26C\uC6B4 \uB09C\uC774\uB3C4 \uB9E4\uCE58"
   itemDropCoolTime: 7
   matchTime: 60
-  minWins: 1
+  minWins: 0
   aiId: {fileID: 11400000, guid: b26a4eb878a2e7947882932b4864ad6c, type: 2}
   dropListId: {fileID: 11400000, guid: b0cc8526bf733b141bf091190e9ddd8f, type: 2}
   prefabAddressable: 

@@ -7,7 +7,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour, IKnockbackReceiver
 {
     //참조 관련
-    [SerializeField] private PlayerData playerData;
+    private PlayerData playerData;
     private CharacterController characterController;
 
     //이동 관련
@@ -32,7 +32,23 @@ public class PlayerMovement : MonoBehaviour, IKnockbackReceiver
     }
 
 
+    public bool Initialize(PlayerData data)
+    {
+        if (data == null) return false;
 
+        playerData = data;
+
+        verticalVelocity = 0f;
+
+        dashRemainingTime = 0f;
+        dashCooldownRemaining = 0f;
+        dashDirection = Vector3.zero;
+
+        knockbackVelocity = Vector3.zero;
+
+        return true;
+
+    }
 
     public void Tick(Vector2 moveInput, float deltaTime, bool canMove)
     {

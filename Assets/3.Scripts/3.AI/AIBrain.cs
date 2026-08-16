@@ -16,17 +16,14 @@ public class AIBrain
     public AIState CurrentState { get; private set; }
     public Transform CurrentTarget { get; private set; }
 
-    public void Decide(Transform playerTarget, Vector3 selfPosition, WeaponPickup weaponPickup, WeaponData currentWeapon)
+    public void Decide(Transform playerTarget, Vector3 selfPosition, WeaponPickup weaponTarget, WeaponData currentWeapon)
     {
         if (CurrentState == AIState.Dead) return;
 
-        bool canChangeWeapon = weaponPickup != null  && weaponPickup.IsAvailable &&
-            (currentWeapon == null || currentWeapon.WeaponId != weaponPickup.Data.WeaponId);
-
-        if (canChangeWeapon)
+        if (weaponTarget != null)
         {
             CurrentState = AIState.SeekWeapon;
-            CurrentTarget = weaponPickup.transform;
+            CurrentTarget = weaponTarget.transform;
             return;
         }
 

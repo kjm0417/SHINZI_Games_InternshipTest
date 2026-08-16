@@ -13,12 +13,26 @@ public class CharacterWeaponHolder : MonoBehaviour
     {
         if (newWeapon == null) return false;
 
-        if (CurrentWeapon != null && CurrentWeapon.WeaponId == newWeapon.WeaponId) return false;
+        if (!CanEquip(newWeapon))
+        {
+            return false;
+        }
 
         CurrentWeapon = newWeapon;
         WeaponChanged?.Invoke(CurrentWeapon);
+
         return true;
     }
 
 
+    //데이터를 받아와야 확인이 가능해 메서드로 제작
+    public bool CanEquip(WeaponData newWeapon)
+    {
+        if (newWeapon == null)
+        {
+            return false;
+        }
+
+        return CurrentWeapon == null || CurrentWeapon.WeaponId != newWeapon.WeaponId;
+    }
 }

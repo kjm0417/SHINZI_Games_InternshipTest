@@ -14,10 +14,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private CharacterCombat combat;
 
     //체력 관련 정보
-    [SerializeField] private PlayerData playerData;
-    [SerializeField] private CharacterHealthSystem healthSystem;
+    private CharacterHealthSystem healthSystem;
+    public CharacterHealthSystem HealthSystem => healthSystem;
+    public PlayerData playerData { get; private set; }
 
-    
+    private bool isInitialized;
+
+
+
 
     private void Awake()
     {
@@ -31,14 +35,31 @@ public class PlayerController : MonoBehaviour
         if (healthSystem == null) healthSystem = GetComponent<CharacterHealthSystem>();
     }
 
-    private void Start()
+    public bool Initialize(PlayerData data)
     {
-        healthSystem.Initialize(playerData.MaxHp);
+        if (data == null)
+        {
+            return false;
+        }
+
+        if (!movement.Initialize(data))
+        {
+            return false;
+        }
+
+        playerData = data;
+
+        healthSystem.Initialize(data.MaxHp);
+
+        isInitialized = true;
+        return true;
     }
 
     //캐릭터 컨트롤러는 어디 위치로 이동해라 이기때문에 fixUpdate말고 Update를 사용
     private void Update()
     {
+        if (!isInitialized) return;
+
         if (healthSystem.IsDead) return;
 
         HandleAim();
