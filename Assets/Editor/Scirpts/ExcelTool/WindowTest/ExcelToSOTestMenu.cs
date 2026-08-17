@@ -5,7 +5,7 @@ public static class DataImporterMenu
 {
     // 경로 상수로 정리 (중복 줄이고 한 곳에서 관리)
     private const string ExcelPath = "Assets/Editor/ExcelData";
-    private const string DataPath = "Assets/GameData";
+    private const string DataPath = "Assets/8.GameData";
 
     //========== 1-Pass: 변환 (참조 없는 것부터, 순서 무관하지만 논리적으로 배치) ==========
 

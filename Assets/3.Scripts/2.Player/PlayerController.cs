@@ -20,7 +20,9 @@ public class PlayerController : MonoBehaviour
 
     private bool isInitialized;
 
-
+    //ui ¿äÃ»¿ë
+    public float DashCooldownNormalized => movement.DashCooldownNormalized;
+    public float AttackCooldownNormalized => combat.AttackCooldownNormalized;
 
 
     private void Awake()
@@ -32,7 +34,7 @@ public class PlayerController : MonoBehaviour
 
         if (combat == null) combat = GetComponentInChildren<CharacterCombat>();
 
-        if (healthSystem == null) healthSystem = GetComponent<CharacterHealthSystem>();
+         if (healthSystem == null) healthSystem = GetComponent<CharacterHealthSystem>();
     }
 
     public bool Initialize(PlayerData data)
@@ -94,5 +96,10 @@ public class PlayerController : MonoBehaviour
         if (!inputReader.ConsumeAttack()) return;
 
         combat.TryAttack();
+    }
+
+    public void StopControl()
+    {
+        isInitialized = false;
     }
 }

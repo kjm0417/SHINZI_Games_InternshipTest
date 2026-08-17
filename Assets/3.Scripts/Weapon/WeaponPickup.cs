@@ -27,10 +27,6 @@ public class WeaponPickup : MonoBehaviour
         ReleaseVisual();
     }
 
-    private void Update()
-    {
-        
-    }
 
     //초기화 시키면서 addresable을 이용해서 외형 로드
     public bool Initialize(WeaponData data)

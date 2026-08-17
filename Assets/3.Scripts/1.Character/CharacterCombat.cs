@@ -9,6 +9,11 @@ public class CharacterCombat : MonoBehaviour
     [SerializeField] private CharacterWeaponView weaponView;
 
     private float cooldownRemaining;
+    private float cooldownDuration;
+
+    //ui전달용
+    public float AttackCooldownNormalized => cooldownRemaining <= 0f || cooldownDuration <= 0f
+        ? 0f : cooldownRemaining / cooldownDuration;
 
     //공격 할 수 있는지
     public bool CanAttack => weaponholder.HasWeapon && cooldownRemaining <= 0f 
@@ -44,7 +49,8 @@ public class CharacterCombat : MonoBehaviour
         WeaponRuntime runtime = weaponView.CurrentRuntime;
 
         //cooldownRemaining에 무기의 AttackCooldawn 적용
-        cooldownRemaining = runtime.WeaponData.AttackCooldown;
+        cooldownDuration = runtime.WeaponData.AttackCooldown;
+        cooldownRemaining = cooldownDuration;
 
         //공격 행동
         runtime.ExecuteAttack();

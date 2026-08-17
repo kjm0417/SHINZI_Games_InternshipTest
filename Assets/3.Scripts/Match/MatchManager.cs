@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -22,10 +23,11 @@ public class MatchManager : MonoBehaviour
     [SerializeField] private PlayerData playerData;
     [SerializeField] private Transform playerSpawnPoint;
     [SerializeField] private Transform aiSpawnPoint;
+    [SerializeField] private float deathAnimationDuration = 1f; //죽는 애니메이션
 
     //이벤트
     public event Action<MatchResult> MatchEnded; //매치 끝
-    public event Action<CharacterHealthSystem, CharacterHealthSystem> MatchStarted; //시작할 때 ui에 정보 넘겨주기
+    public event Action<PlayerController, CharacterHealthSystem> MatchStarted; //시작할 때 ui에 정보 넘겨주기
 
     private MatchData currentMatch;
 
@@ -190,16 +192,6 @@ public class MatchManager : MonoBehaviour
        
     }
 
-    public void StartNextMatch()
-    {
-        StartMatch();
-    }
-
-    public void StartGame()
-    {
-        StartMatch();
-    }
-
     //매치 시작
     private void StartMatch()
     {
@@ -238,7 +230,7 @@ public class MatchManager : MonoBehaviour
         remainingTime = currentMatch.MatchTime;
         isMatchRunning = true;
 
-        MatchStarted?.Invoke(playerHealth, aiHealth);
+        MatchStarted?.Invoke(playerController, aiHealth);
     }
 
     //매치 승수로 선택
@@ -270,7 +262,7 @@ public class MatchManager : MonoBehaviour
     }
 
     //매치 끝
-    private void EndMatch(MatchResult result)
+    private void EndMatch(MatchResult result, float delay)
     {
         if (!isMatchRunning)
         {
@@ -282,13 +274,25 @@ public class MatchManager : MonoBehaviour
         weaponSpawner.StopAndClear();
         UnsubscribeCharacterEvents();
 
-        ReleaseCharacters();
+        playerController.StopControl();
+        aiController.StopControl();
 
         if (result == MatchResult.PlayerVictory)
         {
             playerWins++;
         }
 
+        StartCoroutine(FinishMatch(result, delay));
+    }
+
+    private IEnumerator FinishMatch(MatchResult result, float delay)
+    {
+        if (delay > 0f)
+        {
+            yield return new WaitForSeconds(delay);
+        }
+
+        ReleaseCharacters();
         MatchEnded?.Invoke(result);
     }
 
@@ -297,11 +301,11 @@ public class MatchManager : MonoBehaviour
     {
         if (aiHealth.IsDead)
         {
-            EndMatch(MatchResult.PlayerVictory);
+            EndMatch(MatchResult.PlayerVictory, deathAnimationDuration);
             return;
         }
 
-        EndMatch(MatchResult.PlayerDefeat);
+        EndMatch(MatchResult.PlayerDefeat, deathAnimationDuration);
     }
 
 
@@ -339,23 +343,30 @@ public class MatchManager : MonoBehaviour
     #region 사망처리
     private void HandlePlayerDied()
     {
-        EndMatch(MatchResult.PlayerDefeat);
+        EndMatch(MatchResult.PlayerDefeat, deathAnimationDuration);
     }
 
     private void HandleAIDied()
     {
-        EndMatch(MatchResult.PlayerVictory);
+        EndMatch(MatchResult.PlayerVictory, deathAnimationDuration);
     }
 
     #endregion
 
-
-    //Test용
-    [ContextMenu("Start Next Match")]
-    public void StartNextMatch1()
+    public void StartNextMatch()
     {
         StartMatch();
-        Debug.Log($"매치 시작: {currentMatch.MatchId}, 현재 승수: {playerWins}");
     }
-    
+
+    public void StartGame()
+    {
+        StartMatch();
+    }
+
+    public void ReStart()
+    {
+        playerWins = 0;
+        StartMatch();
+    }
+
 }

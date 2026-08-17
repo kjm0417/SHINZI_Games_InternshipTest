@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class StraightProjectile : Projectile
 {
-    [SerializeField] private Rigidbody rigidbody;
+    [SerializeField] private Rigidbody projectileRigidbody;
 
     private Vector3 moveDirection;
 
@@ -34,13 +34,13 @@ public class StraightProjectile : Projectile
             return false;
         }
 
-        //¹æÇâ Á¤ÇÏ±â
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
         moveDirection = direction.normalized;
 
-        //¾Õ ¹æÇâ Á¤ÇÏ±â
+        //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½
         transform.forward = moveDirection;
 
-        rigidbody.velocity = moveDirection * ProjectileData.Speed;
+        GetComponent<Rigidbody>().velocity = moveDirection * ProjectileData.Speed;
 
         return true;
     }

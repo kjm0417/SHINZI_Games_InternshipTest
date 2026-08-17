@@ -177,4 +177,10 @@ public class AIController : MonoBehaviour
         return nearestPickup;
 
     }
+
+    public void StopControl()
+    {
+        isInitialized = false;
+        movement.Stop();
+    }
 }

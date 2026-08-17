@@ -647,6 +647,8 @@ GameObject:
   - component: {fileID: 1316380719514033076}
   - component: {fileID: 1724008216027360051}
   - component: {fileID: 3284003556977484520}
+  - component: {fileID: 6502139263046582193}
+  - component: {fileID: 3509239530601403263}
   m_Layer: 7
   m_Name: AI_Hard
   m_TagString: Untagged
@@ -690,10 +692,10 @@ Animator:
   m_GameObject: {fileID: 3959051670965181084}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: bdcba2b2472fe55489320a8d44706a0c, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8d241648697b7134a85fee144b04949f, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -712,7 +714,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 30
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -841,6 +843,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponHolder: {fileID: 1724008216027360051}
   weaponSocket: {fileID: 4599097321951563229}
+--- !u!114 &6502139263046582193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3959051670965181084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1caa61cfdb5c494bbf0fafefa44ed6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3509239530601403263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3959051670965181084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b41d32830dd5d44a924d2b2c226b685, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthSystem: {fileID: 7546088404461115986}
 --- !u!1 &4027173697259118684
 GameObject:
   m_ObjectHideFlags: 0

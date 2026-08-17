@@ -17,6 +17,8 @@ public class MatchUI : MonoBehaviour
     [Header("버튼")]
     [SerializeField] private Button startButton;
     [SerializeField] private Button nextMatchButton;
+    [SerializeField] private Button ReStartButton;
+
 
     [Header("Match HUD")]
     [SerializeField] private MatchHUDUI matchHUD;
@@ -30,6 +32,7 @@ public class MatchUI : MonoBehaviour
         ShowGameStart();
         startButton.onClick.AddListener(OnStartButtonClicked);
         nextMatchButton.onClick.AddListener(OnNextMatchButtonClicked);
+        ReStartButton.onClick.AddListener(OnReStartButtonClicked);
 
     }
 
@@ -59,9 +62,9 @@ public class MatchUI : MonoBehaviour
         matchManager.StartGame();
     }
 
-    private void HandleMatchStarted(CharacterHealthSystem playerHealth,CharacterHealthSystem aiHealth)
+    private void HandleMatchStarted(PlayerController playerController,CharacterHealthSystem aiHealth)
     {
-        matchHUD.Bind(matchManager, playerHealth, aiHealth);
+        matchHUD.Bind(matchManager, playerController, aiHealth);
 
         gameStartCanvas.SetActive(false);
         matchCanvas.SetActive(true);
@@ -83,6 +86,13 @@ public class MatchUI : MonoBehaviour
     {
         resultCanvas.SetActive(false);
         matchManager.StartNextMatch();
+    }
+
+    //다시 시작 버튼
+    public void OnReStartButtonClicked()
+    {
+        resultCanvas.SetActive(false);
+        matchManager.ReStart();
     }
 
 }

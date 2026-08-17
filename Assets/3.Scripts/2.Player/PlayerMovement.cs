@@ -26,6 +26,10 @@ public class PlayerMovement : MonoBehaviour, IKnockbackReceiver
     public bool IsDashing => dashRemainingTime > 0f;
     public bool IsDashReady => dashCooldownRemaining <= 0f;
 
+    //UI 데이터 전달용
+    public float DashCooldownNormalized => dashCooldownRemaining <= 0f ?
+        0f : dashCooldownRemaining / playerData.DashCooldown;
+   
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();

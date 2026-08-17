@@ -15,26 +15,22 @@ public static class DataImporter
     //타입별 "id -> SO" 캐시 (참조 연결용)
     private static Dictionary<Type, Dictionary<string, ScriptableObject>> _refCache;
 
+    //해더 읽기 :  헤더 읽기와 본체 필드 검색만 담당
     private static void ReadHeaders<T>(DataTable sheet, out string[] headers, out FieldInfo[] fields)
     {
-        int colCount = sheet.Columns.Count;
-        headers = new string[colCount];
-        fields = new FieldInfo[colCount];
+        int colCount = sheet.Columns.Count; //11
+        headers = new string[colCount]; //해더를 11개 만들고
+        fields = new FieldInfo[colCount]; //필드 정보도 11개 만들고
 
         for (int col = 0; col < colCount; col++)
         {
-            headers[col] = sheet.Rows[0][col].ToString().Trim();
-            fields[col] = typeof(T).GetField(headers[col], FieldFlags);
-            if (fields[col] == null)
-            {
-                Debug.LogWarning($"필드 없음: 헤더 '{headers[col]}'에 해당하는 {typeof(T).Name} 필드가 없어 건너뜀");
-            }
-               
+            headers[col] = sheet.Rows[0][col].ToString().Trim(); //해더 이름 담기
+            fields[col] = typeof(T).GetField(headers[col], FieldFlags); //타입에 맞는 해더와 똑같은 필드 가져와서 넣기             
         }
     }
 
     #region Import
-    //엑셀 주소를 가져와서 그 값을 어디 파일에 저장할건지
+    //엑셀 주소를 가져와서 그 값을 어디 파일에 저장할건지 SO로 변환
     public static void Import<T>(string excelPath, string outputFolderPath) where T : ScriptableObject  
     {
         DataTable sheet = ExcelReader.Read(excelPath);
@@ -44,6 +40,7 @@ public static class DataImporter
         //파일이 없으면 파일 생성 
         EnsureFolderExists(outputFolderPath);
 
+        //필드에 리스트 필드가 있는지 확인
         FieldInfo listField = FindListField<T>();
         if (listField != null)
         {
@@ -60,10 +57,25 @@ public static class DataImporter
         Debug.Log($"{typeof(T)} 데이터 변환 완료");
     }
 
+    //모든 헤더가 본체 필드인지 판단
     private static void ImportNormal<T>(DataTable sheet, string outputFolderPath) where T :ScriptableObject
     {
         ReadHeaders<T>(sheet, out string[] headers, out FieldInfo[] fields);
+
+        for (int col = 0; col < fields.Length; col++)
+        {
+            if (fields[col] != null)
+            {
+                continue;
+            }
+
+            Debug.LogError( $"헤더 오류: '{headers[col]}'에 해당하는 " + $"{typeof(T).Name} 필드가 없습니다.");
+        }
+
+
         int colCount = sheet.Columns.Count;
+
+
 
         //데이터(1행부터) 순회
         for (int row = 1; row < sheet.Rows.Count; row++)
@@ -90,8 +102,7 @@ public static class DataImporter
                 if (typeof(ScriptableObject).IsAssignableFrom(fields[col].FieldType)) continue;
 
                 string raw = sheet.Rows[row][col].ToString().Trim();
-                object converted = ConvertValue(raw, fields[col].FieldType, headers[col], row);
-                if (converted != null)
+                if (TryConvertValue(raw,fields[col].FieldType, headers[col], row, out object converted))
                 {
                     fields[col].SetValue(data, converted);
                 }
@@ -106,60 +117,99 @@ public static class DataImporter
         }
     }
 
+    //본체 또는 List 요소 필드인지 판단 -> 엑셀 여러 행을 하나의 리스트로 묶어서 저장
     private static void ImportAsList<T>(DataTable sheet, string outputFolderPath, FieldInfo listField) where T : ScriptableObject
     {
+        //해더를 읽어옴
         ReadHeaders<T>(sheet, out string[] headers, out FieldInfo[] fields);
         int colCount = sheet.Columns.Count;
 
+        //SO필드에 List 가져오기
         Type elementType = listField.FieldType.GetGenericArguments()[0];
 
-        // 같은 id로 그룹핑
+        //리스트 요소(DropEntry)의 필드를 열별로 저장
+        FieldInfo[] elementFields = new FieldInfo[colCount];
+
+        // ID 기준으로 행 번호 묶기 -> GroupRowsById로 딕셔너리에 바로 저장
         Dictionary<string, List<int>> groups = GroupRowsById(sheet, out List<string> order);
+
+
+        for (int col = 0; col < colCount; col++)
+        {
+            elementFields[col] = elementType.GetField(headers[col], FieldFlags);
+
+            bool hasRootField = fields[col] != null && fields[col] != listField;
+
+            bool hasElementField = elementFields[col] != null;
+
+            // 루트에도 없고 리스트 요소에도 없는 헤더
+            if (!hasRootField && !hasElementField)
+            {
+                Debug.LogError(
+                    $"헤더 오류: '{headers[col]}'에 대응하는 " +
+                    $"{typeof(T).Name} 또는 {elementType.Name} 필드가 없습니다.");
+            }
+
+            // 같은 이름의 필드가 루트와 리스트 요소 양쪽에 존재
+            if (hasRootField && hasElementField)
+            {
+                Debug.LogError(
+                    $"헤더 중복 오류: '{headers[col]}'가 " +
+                    $"{typeof(T).Name}과 {elementType.Name} 양쪽에 존재합니다.");
+            }
+        }
+
+
 
         foreach (string id in order)
         {
             string path = $"{outputFolderPath}/{id}.asset";
             T data = AssetDatabase.LoadAssetAtPath<T>(path);
-            bool isNew = data == null;
-            if (isNew)
+            bool isNew = data == null; //data가 null일 떄 isNew True
+            if (isNew) //없으면 새로 생성
             {
                 data = ScriptableObject.CreateInstance<T>();
             }
 
-            List<int> rowsInGroup = groups[id];
-            int firstRow = rowsInGroup[0];
+            //기존에 있으면 
+            List<int> rowsInGroup = groups[id]; //id의 행 번호 가져오기
+            int firstRow = rowsInGroup[0]; //첫번 째 행 번호
 
-            //일반 필드(List 아닌, 참조 아닌)는 그룹 첫 행에서
+            //필드에 있는 내용만 여기서 관리하고 필드에 없고 리스트안에 따로 저장되어 있는값은 다음에
             for (int col = 0; col < colCount; col++)
             {
                 if (fields[col] == null) continue;
                 if (fields[col] == listField) continue;
+
                 if (typeof(ScriptableObject).IsAssignableFrom(fields[col].FieldType)) continue;
 
                 string raw = sheet.Rows[firstRow][col].ToString().Trim();
-                object converted = ConvertValue(raw, fields[col].FieldType, headers[col], firstRow);
-                if (converted != null)
+                if (TryConvertValue(raw, fields[col].FieldType, headers[col], firstRow, out object converted))
+                {
                     fields[col].SetValue(data, converted);
+                }
+
             }
+
 
             // List 필드: 그룹의 각 행을 요소로 (참조는 2-Pass에서)
             var newList = (IList)Activator.CreateInstance(listField.FieldType);
             foreach (int row in rowsInGroup)
             {
                 object element = Activator.CreateInstance(elementType);
+
                 for (int col = 0; col < colCount; col++)
                 {
-                    FieldInfo elemField = elementType.GetField(headers[col], FieldFlags);
+                    FieldInfo elemField = elementFields[col];
                     if (elemField == null) continue;
 
                     if (typeof(ScriptableObject).IsAssignableFrom(elemField.FieldType)) continue; // 참조 스킵
 
                     string raw = sheet.Rows[row][col].ToString().Trim();
-                    object converted = ConvertValue(raw, elemField.FieldType, headers[col], row);
-                    if (converted != null)
+                    if (TryConvertValue(raw, elemField.FieldType, headers[col], row, out object converted))
                     {
                         elemField.SetValue(element, converted);
-                    }   
+                    }
                 }
                 newList.Add(element);
             }
@@ -221,6 +271,7 @@ public static class DataImporter
         Debug.Log($"{typeof(T).Name} 참조 연결 완료");
 
     }
+
     // SO에 직접 있는 참조 필드 연결 (behaviorId, aiId 등)
     private static void ResolveNormalReferences<T>(DataTable sheet, string outputFolderPath,
         string[] headers, FieldInfo[] fields) where T : ScriptableObject
@@ -244,18 +295,23 @@ public static class DataImporter
                 if (!typeof(ScriptableObject).IsAssignableFrom(fields[col].FieldType)) continue;
 
                 string refId = sheet.Rows[row][col].ToString().Trim();
-                if (string.IsNullOrEmpty(refId)) continue;
 
-                ScriptableObject refSO = FindFromCache(refId, fields[col].FieldType);
-                if (refSO != null)
+                ScriptableObject resolvedReference = ResolveReferenceOrNull(
+                        refId,
+                        fields[col].FieldType,
+                        headers[col],
+                        row);
+
+                //SO에 기본 참조 가져오기
+                ScriptableObject currentReference = fields[col].GetValue(data) as ScriptableObject;
+
+                if (currentReference == resolvedReference)
                 {
-                    fields[col].SetValue(data, refSO);
-                    changed = true;
+                    continue;
                 }
-                else
-                {
-                    Debug.LogError($"참조 실패: {row + 1}행 '{headers[col]}'의 '{refId}'({fields[col].FieldType.Name})를 찾을 수 없음");
-                }
+
+                fields[col].SetValue(data, resolvedReference);
+                changed = true;
             }
             if (changed) EditorUtility.SetDirty(data);
         }
@@ -300,24 +356,50 @@ public static class DataImporter
                     if (!typeof(ScriptableObject).IsAssignableFrom(elemField.FieldType)) continue; // 참조만
 
                     string refId = sheet.Rows[row][col].ToString().Trim();
-                    if (string.IsNullOrEmpty(refId)) continue;
 
-                    ScriptableObject refSO = FindFromCache(refId, elemField.FieldType);
-                    if (refSO != null)
+                    ScriptableObject resolvedReference = ResolveReferenceOrNull(
+                            refId,
+                            elemField.FieldType,
+                            headers[col],
+                            row);
+
+                    ScriptableObject currentReference = elemField.GetValue(element) as ScriptableObject;
+
+                    if (currentReference == resolvedReference)
                     {
-                        elemField.SetValue(element, refSO);
-                        changed = true;
+                        continue;
                     }
-                    else
-                    {
-                        Debug.LogError($"참조 실패: {row + 1}행 '{headers[col]}'의 '{refId}'({elemField.FieldType.Name})를 찾을 수 없음");
-                    }
+
+                    elemField.SetValue(element, resolvedReference);
+                    changed = true;
                 }
                 list[i] = element; // 값 타입 대비 재할당
             }
 
             if (changed) EditorUtility.SetDirty(data);
         }
+    }
+
+
+    //SO 변경 시 빈 셀 일 경우 초기화 안되고 기존값 유지 현상 막기 
+    //문자열 ID를 해당 SO 참조로 바꿀 수 있나?
+    private static ScriptableObject ResolveReferenceOrNull(string refId, Type referenceType, string header, int row)
+    { //refId : Excel 참조 ID, refId : SO 타
+
+        if (string.IsNullOrWhiteSpace(refId))
+        {
+            return null;
+        }
+
+        ScriptableObject reference = FindFromCache(refId, referenceType);
+
+        if (reference == null)
+        {
+            Debug.LogError( $"참조 실패: {row + 1}행 " + $"'{header}'의 ID '{refId}'에 해당하는 " +
+                $"{referenceType.Name} 에셋을 찾을 수 없습니다.");
+        }
+
+        return reference;
     }
 
     #endregion
@@ -361,30 +443,59 @@ public static class DataImporter
         return null;
     }
 
-    private static object ConvertValue(string raw, Type type, string header, int row)
+    //엑셀 데이터가 있다가 사라질 때 처리를 변경함, 타입별로 처리 방식 및 오류 상태 제공
+    private static bool TryConvertValue(string raw, Type type, string header, int row, out object converted)
     {
-        if (string.IsNullOrEmpty(raw)) return null;
+        converted = null;
+
+        // string은 이미 원하는 타입이므로 그대로 적용
+        if (type == typeof(string))
+        {
+            converted = raw ?? string.Empty;
+            return true;
+        }
+
+        //숫자와 enum의 빈 셀은 현재 데이터 규칙에서 허용하지 않음
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            Debug.LogError($"빈 값 오류: {row + 1}행 " +$"'{header}'에는 값이 필요합니다.");
+
+            return false;
+        }
 
         try
         {
             if (type.IsEnum)
             {
-                return Enum.Parse(type, raw);
+                //enum처리
+                converted = Enum.Parse(type, raw);
             }
-            return Convert.ChangeType(raw, type);
+            else
+            {
+                //기본적인 처리
+                converted = Convert.ChangeType(raw, type);
+            }
+
+            return true;
         }
-        catch
+        catch (Exception exception)
         {
-            Debug.LogError($"변환 실패: {row + 1}행 '{header}'의 값 '{raw}'를 {type.Name}으로 바꿀 수 없음");
-            return null;
+            Debug.LogError($"변환 실패: {row + 1}행 " + $"'{header}'의 값 '{raw}'을 " +
+                $"{type.Name}으로 바꿀 수 없습니다.\n" +exception.Message);
+
+            converted = null;
+            return false;
         }
+
     }
 
+    //파일 없으면 파일 생성 해주기
     private static void EnsureFolderExists(string folderPath)
     {
+        //폴더가 존재하는지 확인 있으면 true 없으면 false
         if (AssetDatabase.IsValidFolder(folderPath)) return;
 
-        Debug.Log($"출력 폴더가 없어 생성함: {folderPath}");  // 알림 추가
+        Debug.Log($"출력 폴더가 없어 생성함: {folderPath}");
 
         string[] parts = folderPath.Split('/');
         string current = parts[0];
@@ -407,6 +518,7 @@ public static class DataImporter
     {
         foreach (FieldInfo field in typeof(T).GetFields(FieldFlags))
         {
+            //필드가 제네릭 타입이고, 전달 되는 타입이 List인지 
             if (field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == typeof(List<>))
                 return field;
         }

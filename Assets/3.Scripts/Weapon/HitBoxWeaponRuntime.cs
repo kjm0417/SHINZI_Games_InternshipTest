@@ -7,13 +7,17 @@ public class HitBoxWeaponRuntime : WeaponRuntime
 {
     [SerializeField] private Collider hitbox;
 
-    private Coroutine attackCoroutine;
+
+    private Coroutine attackCoroutine; //코루틴
+    private Animator animator; //애니메이터
+    private static readonly int AttackHash = Animator.StringToHash("Attack"); //애니메이션 해시
 
     //피격 기록
     private readonly HashSet<CharacterDamageReceiver> hitTargets = new();
 
     private void Awake()
     {
+        animator = GetComponent<Animator>();
         hitbox.enabled = false;
     }
 
@@ -38,6 +42,7 @@ public class HitBoxWeaponRuntime : WeaponRuntime
     {
         if (IsAttacking) return;
 
+        animator.SetTrigger(AttackHash);
         attackCoroutine = StartCoroutine(AttackRoutine());
     }
 

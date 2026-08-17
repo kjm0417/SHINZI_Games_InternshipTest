@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MatchHUDUI : MonoBehaviour
 {
@@ -15,14 +16,21 @@ public class MatchHUDUI : MonoBehaviour
     [SerializeField] private TMP_Text aiNameText;
     [SerializeField] private TMP_Text playerWinsText;
 
+    [Header("Cooldown")]
+    [SerializeField] private Image attackCooldownImage;
+    [SerializeField] private Image dashCooldownImage;
+
+    private PlayerController playerController;
+
     private MatchManager matchManager;
     private int lastDisplayedSecond = -1;
 
-    public void Bind(MatchManager manager, CharacterHealthSystem playerHealth, CharacterHealthSystem aiHealth)
+    public void Bind(MatchManager manager, PlayerController newPlayerController, CharacterHealthSystem aiHealth)
     {
         matchManager = manager;
+        playerController = newPlayerController;
 
-        playerHealthBar.Bind(playerHealth);
+        playerHealthBar.Bind(playerController.HealthSystem);
         aiHealthBar.Bind(aiHealth);
 
         matchNameText.text = matchManager.CurrentMatch.MatchName;
@@ -44,10 +52,14 @@ public class MatchHUDUI : MonoBehaviour
 
     private void Update()
     {
-        if (matchManager == null || !matchManager.IsMatchRunning)
+        if (matchManager == null ||playerController ==null ||!matchManager.IsMatchRunning)
         {
             return;
         }
+
+        attackCooldownImage.fillAmount = playerController.AttackCooldownNormalized;
+
+        dashCooldownImage.fillAmount = playerController.DashCooldownNormalized;
 
         UpdateTimerText();
     }

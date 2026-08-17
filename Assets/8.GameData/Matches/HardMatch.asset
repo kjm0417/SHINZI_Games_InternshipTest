@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d20e7728337d91468c5e218560ec50d, type: 3}
+  m_Name: HardMatch
+  m_EditorClassIdentifier: 
+  matchId: HardMatch
+  matchName: "1vs1 \uB370\uC2A4\uB9E4\uCE58"
+  itemDropCoolTime: 3
+  matchTime: 120
+  minWins: 5
+  aiId: {fileID: 11400000, guid: ff2987f3d5053b940b7614d3790ce81b, type: 2}
+  dropListId: {fileID: 11400000, guid: 2e8d6cf6bcb7529429ace1ff5e6c6b14, type: 2}
+  prefabAddressable: Matches/Match_1

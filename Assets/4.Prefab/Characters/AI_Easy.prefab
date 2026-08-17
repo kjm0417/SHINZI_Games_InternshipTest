@@ -1827,6 +1827,7 @@ GameObject:
   - component: {fileID: 2873901482187416405}
   - component: {fileID: 7913759990253249400}
   - component: {fileID: 8528628273585104623}
+  - component: {fileID: 4370389001497802846}
   m_Layer: 7
   m_Name: AI_Easy
   m_TagString: Untagged
@@ -1869,10 +1870,10 @@ Animator:
   m_GameObject: {fileID: 8677789237469989849}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: bdcba2b2472fe55489320a8d44706a0c, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8d241648697b7134a85fee144b04949f, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -1941,7 +1942,7 @@ MonoBehaviour:
   aim: {fileID: 8399703511974682230}
   healthSystem: {fileID: 9015424704112836188}
   combat: {fileID: 8528628273585104623}
-  weaponHolder: {fileID: 0}
+  weaponHolder: {fileID: 5974959435613981814}
 --- !u!114 &907495562584307265
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2033,6 +2034,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponholder: {fileID: 5974959435613981814}
   weaponView: {fileID: 2873901482187416405}
+--- !u!114 &4370389001497802846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8677789237469989849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1caa61cfdb5c494bbf0fafefa44ed6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9051133874752381762
 GameObject:
   m_ObjectHideFlags: 0

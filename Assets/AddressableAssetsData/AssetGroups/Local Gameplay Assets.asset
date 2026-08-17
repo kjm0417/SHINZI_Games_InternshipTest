@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Local Gameplay Assets
+  m_EditorClassIdentifier: 
+  m_GroupName: Local Gameplay Assets
+  m_Data:
+    m_SerializedData: []
+  m_GUID: b552780000faca245aa9e65c2c17d6e7
+  m_SerializeEntries:
+  - m_GUID: 26a810ffbe6d4f24bb733454d2d00090
+    m_Address: Characters/Player
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5673ec084d4129646b2eb45c4e3057c4
+    m_Address: Weapons/Shield
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5eed6478d43ac0b41a9abc9e1e35c57f
+    m_Address: Weapons/Bow
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 75c65552a4d147243aa1f18d14005107
+    m_Address: Characters/AI_Easy
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 769e40a4ea5025e45832711a1943ea00
+    m_Address: Pickups/WeaponPickup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9875a8fe734076a4485d5a6b3e7223f1
+    m_Address: Weapons/Hammer
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ccb83becb26190b49843fa7731e86389
+    m_Address: Characters/AI_Normal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e29c80a4a3672274ca57e2b34d8b7ab2
+    m_Address: Characters/AI_Hard
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed0e153c76b58c549801756a635142d9
+    m_Address: Matches/Match_1
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f20f852579150454a969aa5151e005f7
+    m_Address: Projectiles/Arrow
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f67204321aef39a4c9d0230dfb062de0
+    m_Address: Weapons/Sword
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c91206795e04d6042adab10446f0dab9, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: ef976731237cea84685f5afae7647b8c, type: 2}
+    - {fileID: 11400000, guid: ccf5406610445b248bde64b59294ab8e, type: 2}

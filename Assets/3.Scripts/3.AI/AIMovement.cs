@@ -37,14 +37,6 @@ public class AIMovement : MonoBehaviour, IKnockbackReceiver
         }
     }
 
-    public bool SetDestination(Vector3 destination)
-    {
-        if(agent.enabled && agent.isOnNavMesh)
-        {
-
-        }
-        return true;
-    }
 
     public void MoveTo(Vector3 destionation)
     {
