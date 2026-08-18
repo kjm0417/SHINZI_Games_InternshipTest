@@ -65,7 +65,8 @@ public class MatchUI : MonoBehaviour
     private void HandleMatchStarted(PlayerController playerController,CharacterHealthSystem aiHealth)
     {
         matchHUD.Bind(matchManager, playerController, aiHealth);
-
+        AudioManager.Instance.PlayBGM("Sounds/BGM");
+        
         gameStartCanvas.SetActive(false);
         matchCanvas.SetActive(true);
         resultCanvas.SetActive(false);

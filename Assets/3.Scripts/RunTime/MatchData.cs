@@ -11,7 +11,6 @@ public class MatchData : ScriptableObject
     [SerializeField] private AIData aiId;
     [SerializeField] private MatchDropData dropListId;
 
-    [SerializeField] private string prefabAddressable;
 
     public string MatchId => matchId;
     public string MatchName => matchName;
@@ -20,5 +19,4 @@ public class MatchData : ScriptableObject
     public int MinWins => minWins;
     public AIData AI_Id => aiId;
     public MatchDropData DropId => dropListId;
-    public string PrefabAddressable => prefabAddressable;
 }

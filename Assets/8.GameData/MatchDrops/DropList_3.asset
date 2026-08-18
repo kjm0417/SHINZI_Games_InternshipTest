@@ -15,7 +15,7 @@ MonoBehaviour:
   dropListId: DropList_3
   entries:
   - weaponId: {fileID: 11400000, guid: 56cdd243a51a3e544b9a64bea838621f, type: 2}
-    dropRate: 2
+    dropRate: 3
   - weaponId: {fileID: 11400000, guid: f4510d191c5f574419659aed77f72b0d, type: 2}
     dropRate: 3
   - weaponId: {fileID: 11400000, guid: c6122a296b6f6e742bc3620a1c4031d4, type: 2}

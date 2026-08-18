@@ -19,4 +19,3 @@ MonoBehaviour:
   minWins: 3
   aiId: {fileID: 11400000, guid: 063368fbffaaf8840810fd3fc767b3d6, type: 2}
   dropListId: {fileID: 11400000, guid: 8d5ee892527228e40a44bd006328f13a, type: 2}
-  prefabAddressable: Matches/Match_1

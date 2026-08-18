@@ -28,6 +28,8 @@ public class CharacterHealthSystem : MonoBehaviour
     {
         if (IsDead || damage <= 0f) return;
 
+        AudioManager.Instance.PlayHitSound();
+
         CurrentHealth = Mathf.Max(0,CurrentHealth-damage);
         HealthChanged?.Invoke(CurrentHealth, MaxHealth);
 

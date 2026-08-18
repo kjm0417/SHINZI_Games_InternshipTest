@@ -22,3 +22,4 @@ MonoBehaviour:
   knockbackPower: 5
   projectileId: {fileID: 11400000, guid: a5840dd647b3210489a8bdec280e9204, type: 2}
   prefabAddressable: Weapons/Bow
+  soundAddressable: Sounds/Bow

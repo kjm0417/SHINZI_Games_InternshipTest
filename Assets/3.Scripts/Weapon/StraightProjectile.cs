@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class StraightProjectile : Projectile
 {
-    [SerializeField] private Rigidbody projectileRigidbody;
+    private Rigidbody projectileRigidbody;
 
     private Vector3 moveDirection;
 
