@@ -54,8 +54,38 @@ public class AIBrain
 
     }
 
+    public bool TryDecideDodge(Vector3 attackerPosition, Vector3 selfPosition, float dodgeChance, out Vector3 dodgeDirection)
+    {
+        dodgeDirection = Vector3.zero;
+
+        if (CurrentState == AIState.Dead)
+        {
+            return false;
+        }
+
+        if (Random.value >= dodgeChance)
+        {
+            return false;
+        }
+
+        Vector3 awayDirection = selfPosition - attackerPosition;
+        awayDirection.y = 0f;
+
+        if (awayDirection.sqrMagnitude < 0.001f)
+        {
+            return false;
+        }
+
+        Vector3 sideDirection = Vector3.Cross(Vector3.up, awayDirection.normalized);
+
+        dodgeDirection = Random.value < 0.5f ? sideDirection  : -sideDirection;
+
+        return true;
+    }
+
     public void SetDead()
     {
         CurrentState = AIState.Dead;
+        CurrentTarget = null;
     }
 }

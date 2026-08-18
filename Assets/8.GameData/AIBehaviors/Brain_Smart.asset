@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   aiBehaviorId: Brain_Smart
   reactionTime: 0.15
-  aggression: 0.9
-  dodgeChance: 0.6
+  dodgeChance: 0.9

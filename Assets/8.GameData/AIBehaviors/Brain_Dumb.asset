@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   aiBehaviorId: Brain_Dumb
   reactionTime: 0.6
-  aggression: 0.3
-  dodgeChance: 0.1
+  dodgeChance: 0.3

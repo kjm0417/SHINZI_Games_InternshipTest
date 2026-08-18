@@ -16,9 +16,10 @@ public class AIController : MonoBehaviour
     public CharacterHealthSystem HealthSystem => healthSystem;
 
     private AIBrain brain;
-   
     private AIData aiData;
+
     private Transform target;
+    private CharacterCombat targetCombat;
     private WeaponSpawner weaponSpawner;
 
     private bool isInitialized;
@@ -41,6 +42,15 @@ public class AIController : MonoBehaviour
         if (data == null) return false;
         if (playerTarget == null) return false;
         if (spawner == null) return false;
+        if (data.BehaviorId == null) return false;
+
+        CharacterCombat playerCombat = playerTarget.GetComponentInChildren<CharacterCombat>();
+
+        targetCombat = playerCombat;
+        targetCombat.AttackStarted += HandleTargetAttackStarted;
+
+        if (playerCombat == null) return false;
+
 
         aiData = data;
         target = playerTarget;
@@ -48,7 +58,11 @@ public class AIController : MonoBehaviour
 
         brain = new AIBrain();
 
-        movement.Initialize(data.Speed);
+        if (!movement.Initialize(data))
+        {
+            return false;
+        }
+
         healthSystem.Initialize(data.MaxHp);
 
         decisionTimer = 0f;
@@ -60,11 +74,17 @@ public class AIController : MonoBehaviour
     private void OnEnable()
     {
         healthSystem.Died += HandleDied;
+
     }
 
     private void OnDisable()
     {
         healthSystem.Died -= HandleDied;
+
+        if (targetCombat != null)
+        {
+            targetCombat.AttackStarted -= HandleTargetAttackStarted;
+        }
     }
 
     void Update()
@@ -128,11 +148,58 @@ public class AIController : MonoBehaviour
         }
     }
 
+    private void HandleTargetAttackStarted(
+    WeaponData attackWeapon)
+    {
+        if (!isInitialized)
+        {
+            return;
+        }
+
+        if (brain.CurrentState == AIState.Dead)
+        {
+            return;
+        }
+
+        if (attackWeapon == null)
+        {
+            return;
+        }
+
+        if (!movement.IsDashReady)
+        {
+            return;
+        }
+
+        Vector3 offset = transform.position - target.position;
+
+        offset.y = 0f;
+
+        float threatRange = attackWeapon.Range;
+
+        // 공격 범위 밖이라면 회피하지 않음
+        if (offset.sqrMagnitude > threatRange * threatRange)
+        {
+            return;
+        }
+
+        if (!brain.TryDecideDodge( target.position, transform.position,aiData.BehaviorId.DodgeChance, out Vector3 dodgeDirection))
+        {
+            return;
+        }
+
+        movement.TryDash(dodgeDirection);
+    }
+
     private void HandleDied()
     {
+
         brain.SetDead();
+        movement.CancelDash();
         movement.Stop();
     }
+
+
 
     private WeaponPickup FindNearestWeapon()
     {
@@ -181,6 +248,8 @@ public class AIController : MonoBehaviour
     public void StopControl()
     {
         isInitialized = false;
+
+        movement.CancelDash();
         movement.Stop();
     }
 }
