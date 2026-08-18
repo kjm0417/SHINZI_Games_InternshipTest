@@ -109,11 +109,9 @@ public class MatchManager : MonoBehaviour
                 if (handle.Status != AsyncOperationStatus.Succeeded)
                 {
                     Addressables.Release(handle);
-                    HandleMatchStartFailed();
                     return;
                 }
 
-                //이전 요청 취소
                 if (this == null || requestedVersion != matchVersion)
                 {
                     Addressables.ReleaseInstance(handle.Result);
@@ -125,14 +123,12 @@ public class MatchManager : MonoBehaviour
                 if (controller == null)
                 {
                     Addressables.ReleaseInstance(handle.Result);
-                    HandleMatchStartFailed();
                     return;
                 }
 
                 if (!controller.Initialize(playerData))
                 {
                     Addressables.ReleaseInstance(handle.Result);
-                    HandleMatchStartFailed();
                     return;
                 }
 
@@ -296,7 +292,6 @@ public class MatchManager : MonoBehaviour
             yield return new WaitForSeconds(delay);
         }
 
-        AudioManager.Instance.StopBGM();
         ReleaseCharacters();
         MatchEnded?.Invoke(result);
     }

@@ -22,4 +22,3 @@ MonoBehaviour:
   knockbackPower: 12
   projectileId: {fileID: 0}
   prefabAddressable: Weapons/Hammer
-  soundAddressable: Sounds/Hammer

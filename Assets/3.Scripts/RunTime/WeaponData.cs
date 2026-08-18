@@ -15,7 +15,6 @@ public class WeaponData : ScriptableObject
 
     [Tooltip("주소값")]
     [SerializeField] private string prefabAddressable;
-    [SerializeField] private string soundAddressable;
 
     //프로퍼티 읽기 전용
     public string WeaponId => weaponId;
@@ -28,7 +27,6 @@ public class WeaponData : ScriptableObject
     public int KnockbackPower => knockbackPower;
     public ProjectileData ProjectileId => projectileId;
     public string PrefabAddressable => prefabAddressable;
-    public string SoundAddressable => soundAddressable;
 
 }
 

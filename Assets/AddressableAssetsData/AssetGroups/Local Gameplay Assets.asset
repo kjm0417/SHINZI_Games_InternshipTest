@@ -22,11 +22,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3bbab569700ff144980d2b2460b8ed54
-    m_Address: Sounds/BGM
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5673ec084d4129646b2eb45c4e3057c4
     m_Address: Weapons/Shield
     m_ReadOnly: 0

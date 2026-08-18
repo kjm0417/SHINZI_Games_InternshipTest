@@ -22,4 +22,3 @@ MonoBehaviour:
   knockbackPower: 8
   projectileId: {fileID: 0}
   prefabAddressable: Weapons/Sword
-  soundAddressable: Sounds/Sword

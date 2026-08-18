@@ -22,4 +22,3 @@ MonoBehaviour:
   knockbackPower: 10
   projectileId: {fileID: 0}
   prefabAddressable: Weapons/Shield
-  soundAddressable: Sounds/Shield

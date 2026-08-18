@@ -55,8 +55,6 @@ public class CharacterCombat : MonoBehaviour
         //공격 행동
         runtime.ExecuteAttack();
 
-        AudioManager.Instance.PlayWeaponSound(weaponholder.CurrentWeapon.WeaponId);
-
         //공격 시작 알림
         AttackStarted?.Invoke(runtime.WeaponData);
 
